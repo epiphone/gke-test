@@ -61,7 +61,7 @@ commands:
           name: Initialize Terraform
           command: |
             export TF_IN_AUTOMATION=true
-            export GCLOUD_KEYFILE_JSON='/tmp/gcloud-service-key.json'
+            export GOOGLE_APPLICATION_CREDENTIALS='/tmp/gcloud-service-key.json'
             cd terraform/<< parameters.environment >> && echo 'Updating infra at ' `pwd` && cat /tmp/gcloud-service-key.json
             terraform init -input=false
             terraform validate

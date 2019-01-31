@@ -46,3 +46,4 @@ In cases where you need to sidestep CI and deploy something locally:
 - explicitly define provider versions
 - set Google Cloud provider services https://cloud.google.com/service-usage/docs/list-services
 - prevent Cloud SQL destroy akin to Cloudformation `retain`: https://www.terraform.io/docs/configuration/resources.html#meta-parameters
+- clean up old container images from GCR
