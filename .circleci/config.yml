@@ -63,14 +63,18 @@ commands:
             export TF_IN_AUTOMATION=true
             export TF_VAR_app_image_tag=`cat /tmp/app_image_tag`
             export GOOGLE_APPLICATION_CREDENTIALS='/tmp/gcloud-service-key.json'
-            cd terraform/<< parameters.environment >> && echo 'Updating infra at ' `pwd` && cat /tmp/gcloud-service-key.json
+            cd terraform/<< parameters.environment >>
+            echo 'Updating infra at ' `pwd` && cat /tmp/gcloud-service-key.json
             terraform init -input=false
       - run:
           name: Validate Terraform
-          command: terraform validate
+          command: |
+            cd terraform/<< parameters.environment >>
+            terraform validate
       - run:
           name: Apply Terraform update
           command: |
+            cd terraform/<< parameters.environment >>
             terraform plan -out=tfplan -input=false
             terraform show tfplan
             terraform apply -input=false -auto-approve tfplan
