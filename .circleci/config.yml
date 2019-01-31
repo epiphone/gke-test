@@ -38,6 +38,7 @@ commands:
           root: /tmp
           paths:
             - app_image_tag
+            - gcloud-service-key.json
 
   apply-terraform:
     description: "Update infra to match Terraform spec"
