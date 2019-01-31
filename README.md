@@ -7,6 +7,9 @@ Exploring Google Kubernetes Engine. Includes
 - infrastructure defined with Terraform
 - multiple environments
 - CI pipeline on CircleCI
+  - push to any non-master branch triggers update to `dev` environment
+  - push to `master` branch triggers update to `test` environment
+  - additional approval step at CircleCI UI after `test` environment update triggers `production` environment update
 
 ## Dependencies
 - [terraform](https://learn.hashicorp.com/terraform/getting-started/install.html)
@@ -47,3 +50,5 @@ In cases where you need to sidestep CI and deploy something locally:
 - set Google Cloud provider services https://cloud.google.com/service-usage/docs/list-services
 - prevent Cloud SQL destroy akin to Cloudformation `retain`: https://www.terraform.io/docs/configuration/resources.html#meta-parameters
 - clean up old container images from GCR
+- reduce duplication in CircleCI config
+- prompt for extra approval on infra changes in master

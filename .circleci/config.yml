@@ -39,6 +39,8 @@ commands:
           paths:
             - app_image_tag
             - gcloud-service-key.json
+      - store_artifacts:
+          path: /tmp/app_image_tag
 
   apply-terraform:
     description: "Update infra to match Terraform spec"
@@ -79,9 +81,10 @@ commands:
             export TF_VAR_app_image_tag=`cat /tmp/app_image_tag`
             export GOOGLE_APPLICATION_CREDENTIALS='/tmp/gcloud-service-key.json'
             cd terraform/<< parameters.environment >>
-            terraform plan -out=tfplan -input=false
-            terraform show tfplan
-            terraform apply -input=false -auto-approve tfplan
+            terraform plan -out=/tmp/tfplan -input=false
+            terraform apply -input=false -auto-approve /tmp/tfplan
+      - store_artifacts:
+          path: /tmp/tfplan
 
 jobs:
   test:
