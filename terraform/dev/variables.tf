@@ -12,3 +12,7 @@ variable "zone" {
   type    = "string"
   default = "europe-north1-a"
 }
+
+variable "app_image_tag" {
+  type = "string"
+}

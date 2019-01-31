@@ -19,18 +19,25 @@ commands:
       - setup_remote_docker
       - checkout
       - run:
+          name: Persist app image tag to make it available for later jobs
+          command: echo eu.gcr.io/${<< parameters.google_project_id >>}/gke-app:${CIRCLE_SHA1} > /tmp/app_image_tag
+      - run:
           name: Build Docker image
           command: |
             cd app
             docker build \
               --build-arg COMMIT_REF=${CIRCLE_SHA1} \
               --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
-              -t eu.gcr.io/${<< parameters.google_project_id >>}/gke-app:${CIRCLE_SHA1} .
+              -t `cat /tmp/app_image_tag` .
       - run:
           name: Push image to Google Container Registry
           command: |
             gcloud auth configure-docker
-            docker push eu.gcr.io/${<< parameters.google_project_id >>}/gke-app:${CIRCLE_SHA1}
+            docker push `cat /tmp/app_image_tag`
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - app_image_tag
 
   apply-terraform:
     description: "Update infra to match Terraform spec"
@@ -40,7 +47,18 @@ commands:
         enum: ["dev", "test", "prod"]
     steps:
       - checkout
-      - run: cd terraform/<< parameters.environment >> && echo 'Updating infra at ' `pwd`
+      - attach_workspace:
+          at: /tmp
+      - run: |
+          if ! [ -s /tmp/app_image_tag ]
+          then
+            echo " app_image_tag not specified "; exit 1
+          fi
+          export TF_IN_AUTOMATION=true
+          cd terraform/<< parameters.environment >> && echo 'Updating infra at ' `pwd`
+          terraform init -input=false
+          terraform validate
+          terraform apply -input=false -auto-approve --var 'app_image_tag=`cat /tmp/app_image_tag`'
 
 jobs:
   test:

@@ -18,9 +18,9 @@ The following steps need to be completed manually to set up the project before a
 
 1. Create a new Google Cloud project per each environment
 2. For each Google Cloud project,
-  - set up a Cloud Storage bucket for [remote Terraform state](https://www.terraform.io/docs/backends/types/gcs.html)
-  - set up a service IAM account to be used by Terraform. Attach the `Editor` role to the created user
-  - run `cd terraform/<ENV> && terraform init` to initialize Terraform providers
+    - set up a Cloud Storage bucket for [remote Terraform state](https://www.terraform.io/docs/backends/types/gcs.html)
+    - set up a service IAM account to be used by Terraform. Attach the `Editor` role to the created user
+    - run `cd terraform/<ENV> && terraform init` to initialize Terraform providers
 3. Add environment variables to your CircleCI config
   - `GCLOUD_SERVICE_KEY_DEV` and `GOOGLE_PROJECT_ID_DEV` plus the same for `_TEST` and `_PROD`
 
@@ -28,10 +28,10 @@ The following steps need to be completed manually to set up the project before a
 
 1. Update infra: `cd terraform/dev && terraform apply`
 2. Follow [instructions](https://cloud.google.com/kubernetes-engine/docs/tutorials/hello-app) on building and pushing a Docker image to GKE:
-  - `cd app`
-  - `export PROJECT_ID="$(gcloud config get-value project -q)"`
-  - `docker build -t gcr.io/${PROJECT_ID}/hello-app:v1 .`
-  - `gcloud docker -- push gcr.io/${PROJECT_ID}/hello-app:v1`
+    - `cd app`
+    - `export PROJECT_ID="$(gcloud config get-value project -q)"`
+    - `docker build -t gcr.io/${PROJECT_ID}/hello-app:v1 .`
+    - `gcloud docker -- push gcr.io/${PROJECT_ID}/hello-app:v1`
 
 ## TODO
 

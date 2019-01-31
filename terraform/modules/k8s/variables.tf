@@ -1,3 +1,7 @@
+variable "app_image_tag" {
+  type = "string"
+}
+
 variable client_certificate {
   type = "string"
 }
