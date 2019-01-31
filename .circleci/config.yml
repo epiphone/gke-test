@@ -131,12 +131,14 @@ workflows:
     jobs:
       - test
 
+      # Push to any non-master branche triggers deployment to `dev` environment:
       - build-and-push-image-dev:
           requires:
             - test
           filters:
             branches:
-              only: dev
+              ignore:
+                - master
       - deploy-dev:
           requires:
             - build-and-push-image-dev
@@ -145,19 +147,21 @@ workflows:
               ignore:
                 - master
 
-      # - build-and-push-image-test:
-      #     requires:
-      #       - test
-      #     filters:
-      #       branches:
-      #         only: master
-      # - deploy-test:
-      #     requires:
-      #       - build-and-push-image-test
-      #     filters:
-      #       branches:
-      #         only: master
+      # Push to master branch triggers deployment to `test` environment:
+      - build-and-push-image-test:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
+      - deploy-test:
+          requires:
+            - build-and-push-image-test
+          filters:
+            branches:
+              only: master
 
+      # Push to master branch triggers deployment to `production` environment, with a further manual approval step in CircleCI UI:
       # - build-and-push-image-prod: TODO use image built in test stage
       #     requires:
       #       - test
