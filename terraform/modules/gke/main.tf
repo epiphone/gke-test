@@ -1,10 +1,6 @@
 resource "google_container_cluster" "gke_cluster" {
   name                     = "gke-cluster-${var.env}"
   remove_default_node_pool = true
-
-  node_pool {
-    name = "default-pool"
-  }
 }
 
 resource "google_container_node_pool" "gke_pool" {
