@@ -26,6 +26,9 @@ The following steps need to be completed manually to set up the project before a
 
 ## Manual deployment
 
+In cases where you need to sidestep CI and deploy something locally:
+
+1. [Login](https://www.terraform.io/docs/providers/google/provider_reference.html) to Google Cloud: `gcloud auth application-default login`
 1. Update infra: `cd terraform/dev && terraform apply`
 2. Follow [instructions](https://cloud.google.com/kubernetes-engine/docs/tutorials/hello-app) on building and pushing a Docker image to GKE:
     - `cd app`

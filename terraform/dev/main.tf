@@ -6,17 +6,15 @@ terraform {
   required_version = "0.11.11"
 
   backend "gcs" {
-    bucket      = "tf-state-gke-dev"
-    credentials = "terraform-service-account-dev-credentials.json"
-    prefix      = "terraform-state-dev"
+    bucket = "tf-state-gke-dev"
+    prefix = "terraform-state-dev"
   }
 }
 
 provider "google" {
-  credentials = "${file("terraform-service-account-dev-credentials.json")}" # Make sure to exclude from version control!
-  project     = "${var.project_id}"
-  region      = "${var.region}"
-  zone        = "${var.zone}"
+  project = "${var.project_id}"
+  region  = "${var.region}"
+  zone    = "${var.zone}"
 }
 
 module "gke" {

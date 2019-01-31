@@ -13,8 +13,8 @@ commands:
       - run:
           name: Authenticate Google Cloud client
           command: |
-            echo ${<< parameters.gcloud_service_key >>} > ${HOME}/gcloud-service-key.json
-            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            echo ${<< parameters.gcloud_service_key >>} > /tmp/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file=/tmp/gcloud-service-key.json
             gcloud --quiet config set project ${<< parameters.google_project_id >>}
       - setup_remote_docker
       - checkout
@@ -54,7 +54,9 @@ commands:
           then
             echo " app_image_tag not specified "; exit 1
           fi
+      - run: |
           export TF_IN_AUTOMATION=true
+          export GCLOUD_KEYFILE_JSON='/tmp/gcloud-service-key.json'
           cd terraform/<< parameters.environment >> && echo 'Updating infra at ' `pwd`
           terraform init -input=false
           terraform validate
