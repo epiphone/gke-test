@@ -58,7 +58,9 @@ commands:
           cd terraform/<< parameters.environment >> && echo 'Updating infra at ' `pwd`
           terraform init -input=false
           terraform validate
-          terraform apply -input=false -auto-approve --var 'app_image_tag=`cat /tmp/app_image_tag`'
+          terraform plan -out=tfplan -input=false --var 'app_image_tag=`cat /tmp/app_image_tag`'
+          terraform show tfplan
+          terraform apply -input=false -auto-approve tfplan
 
 jobs:
   test:
