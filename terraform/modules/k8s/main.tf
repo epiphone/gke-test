@@ -72,8 +72,8 @@ resource "kubernetes_service" "app" {
     session_affinity = "ClientIP"
 
     port {
-      port        = 3000
-      target_port = 80
+      port        = 80
+      target_port = "${kubernetes_deployment.app.spec.template.spec.container.container_port}"
     }
 
     type = "LoadBalancer"
