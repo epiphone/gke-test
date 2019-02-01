@@ -9,7 +9,7 @@ provider "kubernetes" {
 
 resource "kubernetes_deployment" "app" {
   metadata {
-    generate_name = "app"
+    generate_name = "app-"
 
     labels {
       test = "app"
@@ -56,5 +56,26 @@ resource "kubernetes_deployment" "app" {
         }
       }
     }
+  }
+}
+
+resource "kubernetes_service" "app" {
+  metadata {
+    generate_name = "app-"
+  }
+
+  spec {
+    selector {
+      test = "${kubernetes_deployment.app.metadata.0.labels.test}"
+    }
+
+    session_affinity = "ClientIP"
+
+    port {
+      port        = 3000
+      target_port = 80
+    }
+
+    type = "LoadBalancer"
   }
 }
