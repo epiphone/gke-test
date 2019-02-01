@@ -82,7 +82,7 @@ resource "kubernetes_service" "app" {
 
     port {
       port        = 80
-      target_port = "${kubernetes_deployment.app.spec.template.spec.container.container_port}"
+      target_port = 3000
     }
 
     type = "LoadBalancer"
