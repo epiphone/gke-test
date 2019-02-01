@@ -7,75 +7,54 @@ provider "kubernetes" {
   cluster_ca_certificate = "${base64decode(var.cluster_ca_certificate)}"
 }
 
-resource "kubernetes_pod" "nginx" {
-  metadata {}
+resource "kubernetes_deployment" "app" {
+  metadata {
+    generate_name = "app"
+
+    labels {
+      test = "app"
+    }
+  }
 
   spec {
-    container {
-      image = "${var.app_image}"
-      name  = "app"
+    replicas = 1
 
-      port {
-        container_port = 3000
+    selector {
+      match_labels {
+        test = "app"
+      }
+    }
+
+    # Describes the pod that will be created if insufficient replicas are detected:
+    template {
+      metadata {
+        labels {
+          test = "app"
+        }
+      }
+
+      spec {
+        container {
+          image = "${var.app_image}"
+          name  = "app"
+
+          port {
+            container_port = 3000
+          }
+
+          resources {
+            limits {
+              cpu    = "500m"
+              memory = "1024Mi"
+            }
+
+            requests {
+              cpu    = "250m"
+              memory = "512Mi"
+            }
+          }
+        }
       }
     }
   }
 }
-
-# resource "kubernetes_deployment" "app" {
-#   metadata {
-#     labels {
-#       test = "app"
-#     }
-#   }
-
-
-#   spec {
-#     replicas = 1
-
-
-#     selector {
-#       match_labels {
-#         test = "app"
-#       }
-#     }
-
-
-#     # Describes the pod that will be created if insufficient replicas are detected:
-#     template {
-#       metadata {
-#         labels {
-#           test = "app"
-#         }
-#       }
-
-
-#       spec {
-#         container {
-#           image = "${var.app_image}"
-#           name  = "app"
-
-
-#           port {
-#             container_port = 3000
-#           }
-
-
-#           resources {
-#             limits {
-#               cpu    = "500m"
-#               memory = "1024Mi"
-#             }
-
-
-#             requests {
-#               cpu    = "250m"
-#               memory = "512Mi"
-#             }
-#           }
-#         }
-#       }
-#     }
-#   }
-# }
-
