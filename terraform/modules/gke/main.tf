@@ -14,12 +14,14 @@ resource "google_compute_subnetwork" "gke_subnetwork" {
 }
 
 resource "google_container_cluster" "gke_cluster" {
-  enable_legacy_abac       = "true"
   min_master_version       = "${data.google_container_engine_versions.gke_versions.latest_master_version}"
   name                     = "gke-cluster-${var.env}"
-  network                  = "${google_compute_network.gke_network.self_link}"
-  subnetwork               = "${google_compute_subnetwork.gke_subnetwork.self_link}"
+  network                  = "${google_compute_network.gke_network.name}"
+  subnetwork               = "${google_compute_subnetwork.gke_subnetwork.name}"
   remove_default_node_pool = true
+
+  # Use ABAC until official Kubernetes plugin supports RBAC.
+  enable_legacy_abac = "true"
 
   lifecycle {
     ignore_changes = ["node_pool"]
