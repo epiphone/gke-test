@@ -25,6 +25,15 @@ resource "kubernetes_deployment" "app" {
       }
     }
 
+    strategy {
+      type = "RollingUpdate"
+
+      rolling_update = {
+        max_surge       = 0
+        max_unavailable = "100%"
+      }
+    }
+
     # Describes the pod that will be created if insufficient replicas are detected:
     template {
       metadata {
