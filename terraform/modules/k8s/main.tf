@@ -7,52 +7,75 @@ provider "kubernetes" {
   cluster_ca_certificate = "${base64decode(var.cluster_ca_certificate)}"
 }
 
-resource "kubernetes_deployment" "app" {
-  metadata {
-    labels {
-      test = "app"
-    }
-  }
+resource "kubernetes_pod" "nginx" {
+  metadata {}
 
   spec {
-    replicas = 1
+    container {
+      image = "${var.app_image}"
+      name  = "app"
 
-    selector {
-      match_labels {
-        test = "app"
-      }
-    }
-
-    # Describes the pod that will be created if insufficient replicas are detected:
-    template {
-      metadata {
-        labels {
-          test = "app"
-        }
-      }
-
-      spec {
-        container {
-          image = "${var.app_image}"
-          name  = "app"
-
-          port {
-            container_port = 3000
-          }
-
-          resources {
-            limits {
-              cpu    = "0.5"
-              memory = "1024Mi"
-            }
-
-            requests {
-              cpu    = "0.25"
-              memory = "512Mi"
-            }
-          }
-        }
+      port {
+        container_port = 3000
       }
     }
   }
 }
+
+# resource "kubernetes_deployment" "app" {
+#   metadata {
+#     labels {
+#       test = "app"
+#     }
+#   }
+
+
+#   spec {
+#     replicas = 1
+
+
+#     selector {
+#       match_labels {
+#         test = "app"
+#       }
+#     }
+
+
+#     # Describes the pod that will be created if insufficient replicas are detected:
+#     template {
+#       metadata {
+#         labels {
+#           test = "app"
+#         }
+#       }
+
+
+#       spec {
+#         container {
+#           image = "${var.app_image}"
+#           name  = "app"
+
+
+#           port {
+#             container_port = 3000
+#           }
+
+
+#           resources {
+#             limits {
+#               cpu    = "500m"
+#               memory = "1024Mi"
+#             }
+
+
+#             requests {
+#               cpu    = "250m"
+#               memory = "512Mi"
+#             }
+#           }
+#         }
+#       }
+#     }
+#   }
+# }
+
