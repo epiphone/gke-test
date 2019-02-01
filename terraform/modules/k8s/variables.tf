@@ -1,4 +1,4 @@
-variable "app_image_tag" {
+variable "app_image" {
   type = "string"
 }
 

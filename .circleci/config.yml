@@ -20,7 +20,7 @@ commands:
       - checkout
       - run:
           name: Persist app image tag to make it available for later jobs
-          command: echo eu.gcr.io/${<< parameters.google_project_id >>}/gke-app:${CIRCLE_SHA1} > /tmp/app_image_tag
+          command: echo eu.gcr.io/${<< parameters.google_project_id >>}/gke-app:${CIRCLE_SHA1} > /tmp/app_image
       - run:
           name: Build Docker image
           command: |
@@ -28,19 +28,19 @@ commands:
             docker build \
               --build-arg COMMIT_REF=${CIRCLE_SHA1} \
               --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
-              -t `cat /tmp/app_image_tag` .
+              -t `cat /tmp/app_image` .
       - run:
           name: Push image to Google Container Registry
           command: |
             gcloud auth configure-docker
-            docker push `cat /tmp/app_image_tag`
+            docker push `cat /tmp/app_image`
       - persist_to_workspace:
           root: /tmp
           paths:
-            - app_image_tag
+            - app_image
             - gcloud-service-key.json
       - store_artifacts:
-          path: /tmp/app_image_tag
+          path: /tmp/app_image
 
   apply-terraform:
     description: "Update infra to match Terraform spec"
@@ -53,17 +53,17 @@ commands:
       - attach_workspace:
           at: /tmp
       - run:
-          name: Check whether app_image_tag was passed over from previous (image build) job
+          name: Check whether app_image was passed over from previous (image build) job
           command: |
-            if ! [ -s /tmp/app_image_tag ]
+            if ! [ -s /tmp/app_image ]
             then
-              echo " app_image_tag not specified "; exit 1
+              echo " app_image not specified "; exit 1
             fi
       - run:
           name: Initialize Terraform
           command: |
             export TF_IN_AUTOMATION=true
-            export TF_VAR_app_image_tag=`cat /tmp/app_image_tag`
+            export TF_VAR_app_image=`cat /tmp/app_image`
             export GOOGLE_APPLICATION_CREDENTIALS='/tmp/gcloud-service-key.json'
             cd terraform/<< parameters.environment >>
             echo 'Updating infra at ' `pwd` && cat /tmp/gcloud-service-key.json
@@ -71,14 +71,14 @@ commands:
       - run:
           name: Validate Terraform
           command: |
-            export TF_VAR_app_image_tag=`cat /tmp/app_image_tag`
+            export TF_VAR_app_image=`cat /tmp/app_image`
             cd terraform/<< parameters.environment >>
             terraform validate
       - run:
           name: Apply Terraform update
           command: |
             export TF_IN_AUTOMATION=true
-            export TF_VAR_app_image_tag=`cat /tmp/app_image_tag`
+            export TF_VAR_app_image=`cat /tmp/app_image`
             export GOOGLE_APPLICATION_CREDENTIALS='/tmp/gcloud-service-key.json'
             cd terraform/<< parameters.environment >>
             terraform plan -out=/tmp/tfplan -input=false
