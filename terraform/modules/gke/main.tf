@@ -14,9 +14,9 @@ resource "google_compute_subnetwork" "gke_subnetwork" {
 }
 
 resource "google_container_cluster" "gke_cluster" {
-  min_master_version       = "${data.google_container_engine_versions.default.latest_master_version}"
+  min_master_version       = "${data.google_container_engine_versions.gke_versions.latest_master_version}"
   name                     = "gke-cluster-${var.env}"
-  network                  = "${google_compute_subnetwork.gke_network.self_link}"
+  network                  = "${google_compute_network.gke_network.self_link}"
   subnetwork               = "${google_compute_subnetwork.gke_subnetwork.self_link}"
   remove_default_node_pool = true
 }

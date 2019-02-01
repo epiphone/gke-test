@@ -42,7 +42,7 @@ In cases where you need to sidestep CI and deploy something locally:
 
 ## TODO
 
-- networking
+- private cluster
 - [load balancing](https://cloud.google.com/kubernetes-engine/docs/tutorials/http-balancer)
 - secrets
 - tune down Terraform IAM user role, least privilege
