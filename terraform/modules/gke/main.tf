@@ -14,6 +14,7 @@ resource "google_compute_subnetwork" "gke_subnetwork" {
 }
 
 resource "google_container_cluster" "gke_cluster" {
+  enable_legacy_abac       = "true"
   min_master_version       = "${data.google_container_engine_versions.gke_versions.latest_master_version}"
   name                     = "gke-cluster-${var.env}"
   network                  = "${google_compute_network.gke_network.self_link}"
