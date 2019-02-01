@@ -19,6 +19,14 @@ resource "google_container_cluster" "gke_cluster" {
   network                  = "${google_compute_network.gke_network.self_link}"
   subnetwork               = "${google_compute_subnetwork.gke_subnetwork.self_link}"
   remove_default_node_pool = true
+
+  lifecycle {
+    ignore_changes = ["node_pool"]
+  }
+
+  node_pool {
+    name = "default-pool"
+  }
 }
 
 resource "google_container_node_pool" "gke_pool" {
