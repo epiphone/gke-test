@@ -10,4 +10,8 @@ app.get("/", (req, res) => {
   res.send(text);
 });
 
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", commitRef, buildDate });
+});
+
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
