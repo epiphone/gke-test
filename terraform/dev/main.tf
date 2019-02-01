@@ -22,7 +22,9 @@ provider "google" {
 module "gke" {
   source = "../modules/gke"
 
-  env = "${local.env}"
+  env          = "${local.env}"
+  region       = "${var.region}"
+  network_name = "gke-network"
 }
 
 module "k8s" {

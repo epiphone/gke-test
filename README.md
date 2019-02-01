@@ -10,6 +10,7 @@ Exploring Google Kubernetes Engine. Includes
   - push to any non-master branch triggers update to `dev` environment
   - push to `master` branch triggers update to `test` environment
   - additional approval step at CircleCI UI after `test` environment update triggers `production` environment update
+  - Terraform plan file and newly built Docker image tag are stored into CircleCI artifacts
 
 ## Dependencies
 - [terraform](https://learn.hashicorp.com/terraform/getting-started/install.html)
@@ -45,8 +46,7 @@ In cases where you need to sidestep CI and deploy something locally:
 - [load balancing](https://cloud.google.com/kubernetes-engine/docs/tutorials/http-balancer)
 - secrets
 - tune down Terraform IAM user role, least privilege
-- multizone GKE cluster
-- explicitly define provider versions
+- [regional GKE cluster](https://cloud.google.com/kubernetes-engine/docs/concepts/regional-clusters)
 - set Google Cloud provider services https://cloud.google.com/service-usage/docs/list-services
 - prevent Cloud SQL destroy akin to Cloudformation `retain`: https://www.terraform.io/docs/configuration/resources.html#meta-parameters
 - clean up old container images from GCR

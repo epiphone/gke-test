@@ -1,5 +1,23 @@
+data "google_container_engine_versions" "gke_versions" {}
+
+resource "google_compute_network" "gke_network" {
+  name                    = "${var.network_name}"
+  auto_create_subnetworks = false
+}
+
+resource "google_compute_subnetwork" "gke_subnetwork" {
+  name                     = "${var.network_name}"
+  ip_cidr_range            = "10.127.0.0/20"
+  network                  = "${google_compute_network.gke_network.self_link}"
+  region                   = "${var.region}"
+  private_ip_google_access = true
+}
+
 resource "google_container_cluster" "gke_cluster" {
+  min_master_version       = "${data.google_container_engine_versions.default.latest_master_version}"
   name                     = "gke-cluster-${var.env}"
+  network                  = "${google_compute_subnetwork.gke_network.self_link}"
+  subnetwork               = "${google_compute_subnetwork.gke_subnetwork.self_link}"
   remove_default_node_pool = true
 }
 
