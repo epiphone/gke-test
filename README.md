@@ -42,7 +42,8 @@ You can also sidestep CI and deploy locally:
     - `docker build -t gcr.io/${PROJECT_ID}/gke-app:v1 .`
     - `gcloud docker -- push gcr.io/${PROJECT_ID}/gke-app:v1`
 3. Authenticate `kubectl`: `gcloud container clusters get-credentials <CLUSTER NAME> --region <CLUSTER REGION>`
-4. Update Kubernetes resources: `kubectl `
+4. Set Kubernetes variables: `PROJECT_NAME=gke-dev APP_IMAGE=eu.gcr.io/... envsubst < k8s/k8s.yml > k8s_filled.yml`
+5. Update Kubernetes resources: `kubectl apply -f k8s_filled.yml`
 
 ## TODO
 

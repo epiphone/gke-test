@@ -2,7 +2,7 @@ version: 2.1
 
 commands:
   build-and-push-image:
-    description: "Build Docker image, push to Google Container Registry"
+    description: Build Docker image, push to Google Container Registry
     parameters:
       gcloud_service_key:
         type: env_var_name
@@ -43,7 +43,7 @@ commands:
           path: /tmp/app_image
 
   apply-terraform:
-    description: "Update infra to match Terraform spec"
+    description: Update infra to match Terraform spec
     parameters:
       environment:
         type: enum
@@ -52,13 +52,6 @@ commands:
       - checkout
       - attach_workspace:
           at: /tmp
-      - run:
-          name: Check whether app_image was passed over from previous (image build) job
-          command: |
-            if ! [ -s /tmp/app_image ]
-            then
-              echo " app_image not specified "; exit 1
-            fi
       - run:
           name: Initialize Terraform
           command: |
@@ -83,6 +76,41 @@ commands:
       - store_artifacts:
           path: /tmp/tfplan
 
+  apply-kubectl:
+    description: Update Kubernetes resources
+    parameters:
+      project_name:
+        type: string
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Check whether app_image was passed over from previous (image build) job
+          command: |
+            if ! [ -s /tmp/app_image ]
+            then
+              echo " app_image not specified "; exit 1
+            fi
+      - run:
+          name: Install dependencies
+          command: |
+            apk add gettext
+            gcloud components install kubectl
+      - run:
+          name: Populate Kubernetes parameters
+          command: PROJECT_NAME=<< parameters.project_name >> APP_IMAGE=`cat /tmp/app_image` envsubst < k8s/k8s.yml > k8s_filled.yml
+      - run:
+          name: Install kubeval and lint all Kubernetes declarations
+          command: |
+            wget https://github.com/garethr/kubeval/releases/download/0.7.3/kubeval-linux-amd64.tar.gz
+            tar xzvf kubeval-linux-amd64.tar.gz
+            chmod u+x kubeval
+            ./kubeval k8s_filled.yml
+      - run:
+          name: Apply kubectl
+          command: kubectl apply -f k8s_filled.yml && kubectl rollout status deployment/<< parameters.project_name >>
+
 jobs:
   test:
     docker:
@@ -100,13 +128,6 @@ jobs:
           paths:
             - app/node_modules
           key: v1-dependencies-{{ checksum "app/yarn.lock" }}
-      # - run:
-      #     name: Install kubeval and lint all Kubernetes declarations
-      #     command: |
-      #       wget https://github.com/garethr/kubeval/releases/download/0.7.3/kubeval-linux-amd64.tar.gz
-      #       tar xzvf kubeval-linux-amd64.tar.gz
-      #       chmod u+x kubeval
-      #       ./kubeval k8s/**/*
       - run:
           name: Run tests
           command: cd app && yarn test
@@ -125,6 +146,8 @@ jobs:
     steps:
       - apply-terraform:
           environment: "dev"
+      - apply-kubectl:
+          project_name: "gke-dev"
 
   build-and-push-image-test:
     docker:
@@ -140,6 +163,8 @@ jobs:
     steps:
       - apply-terraform:
           environment: "test"
+      - apply-kubectl:
+          project_name: "gke-test"
 
   build-and-push-image-prod:
     docker:
@@ -155,6 +180,8 @@ jobs:
     steps:
       - apply-terraform:
           environment: "prod"
+      - apply-kubectl:
+          project_name: "gke-prod"
 
 workflows:
   test-build-deploy:
