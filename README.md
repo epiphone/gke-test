@@ -2,11 +2,13 @@
 [![CircleCI](https://circleci.com/gh/epiphone/gke-terraform-example/tree/master.svg?style=svg)](https://circleci.com/gh/epiphone/gke-terraform-example/tree/master)
 
 Exploring Google Kubernetes Engine. Includes
-- a simple test app dockerized and running on Google Kubernetes Engine
-- Postgres instance on Cloud SQL
+- a simple dockerized test app
+- Google Kubernetes Engine cluster & node pool
+- TODO Postgres instance on Cloud SQL
 - infrastructure defined with Terraform
 - multiple environments
 - CI pipeline on CircleCI
+  - run `app/` tests and validate `k8s/` declarations with [`kubeval`](https://github.com/garethr/kubeval/)
   - push to any non-master branch triggers update to `dev` environment
   - push to `master` branch triggers update to `test` environment
   - additional approval step at CircleCI UI after `test` environment update triggers `production` environment update
@@ -14,7 +16,7 @@ Exploring Google Kubernetes Engine. Includes
 
 ## Dependencies
 - [terraform](https://learn.hashicorp.com/terraform/getting-started/install.html)
-- [gcloud](https://cloud.google.com/sdk/#Quick_Start) for local testing
+- [gcloud](https://cloud.google.com/sdk/#Quick_Start) and [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) for local testing
 
 ## Setup
 
@@ -30,15 +32,17 @@ The following steps need to be completed manually to set up the project before a
 
 ## Manual deployment
 
-In cases where you need to sidestep CI and deploy something locally:
+You can also sidestep CI and deploy locally:
 
 1. [Login](https://www.terraform.io/docs/providers/google/provider_reference.html) to Google Cloud: `gcloud auth application-default login`
 1. Update infra: `cd terraform/dev && terraform apply`
 2. Follow [instructions](https://cloud.google.com/kubernetes-engine/docs/tutorials/hello-app) on building and pushing a Docker image to GKE:
     - `cd app`
     - `export PROJECT_ID="$(gcloud config get-value project -q)"`
-    - `docker build -t gcr.io/${PROJECT_ID}/hello-app:v1 .`
-    - `gcloud docker -- push gcr.io/${PROJECT_ID}/hello-app:v1`
+    - `docker build -t gcr.io/${PROJECT_ID}/gke-app:v1 .`
+    - `gcloud docker -- push gcr.io/${PROJECT_ID}/gke-app:v1`
+3. Authenticate `kubectl`: `gcloud container clusters get-credentials <CLUSTER NAME> --region <CLUSTER REGION>`
+4. Update Kubernetes resources: `kubectl `
 
 ## TODO
 
