@@ -1,15 +1,22 @@
 version: 2.1
 
 commands:
-  build-and-push-image:
-    description: Build Docker image, push to Google Container Registry
+  deploy:
+    description: Build and push docker image, update infra and kubernetes application
     parameters:
       gcloud_service_key:
         type: env_var_name
       google_project_id:
         type: env_var_name
     steps:
-      - run: apk add docker
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --no-cache docker gettext terraform
+            gcloud components install kubectl
+            wget https://github.com/garethr/kubeval/releases/download/0.7.3/kubeval-linux-amd64.tar.gz
+            tar xzvf kubeval-linux-amd64.tar.gz
+            chmod u+x kubeval
       - run:
           name: Authenticate Google Cloud client
           command: |
@@ -19,7 +26,7 @@ commands:
       - setup_remote_docker
       - checkout
       - run:
-          name: Persist app image tag to make it available for later jobs
+          name: Persist app image tag to make it available for later steps
           command: echo eu.gcr.io/${<< parameters.google_project_id >>}/gke-app:${CIRCLE_SHA1} > /tmp/app_image
       - run:
           name: Build Docker image
@@ -34,82 +41,35 @@ commands:
           command: |
             gcloud auth configure-docker
             docker push `cat /tmp/app_image`
-      - persist_to_workspace:
-          root: /tmp
-          paths:
-            - app_image
-            - gcloud-service-key.json
-      - store_artifacts:
-          path: /tmp/app_image
-
-  apply-terraform:
-    description: Update infra to match Terraform spec
-    parameters:
-      environment:
-        type: enum
-        enum: ["dev", "test", "prod"]
-    steps:
-      - checkout
-      - attach_workspace:
-          at: /tmp
       - run:
-          name: Initialize Terraform
+          name: Initialize && validate Terraform
           command: |
-            export TF_IN_AUTOMATION=true
+            cd terraform/${ENV}
             export GOOGLE_APPLICATION_CREDENTIALS='/tmp/gcloud-service-key.json'
-            cd terraform/<< parameters.environment >>
-            echo 'Updating infra at ' `pwd` && cat /tmp/gcloud-service-key.json
             terraform init -input=false
-      - run:
-          name: Validate Terraform
-          command: |
-            cd terraform/<< parameters.environment >>
             terraform validate
       - run:
           name: Apply Terraform update
           command: |
-            export TF_IN_AUTOMATION=true
             export GOOGLE_APPLICATION_CREDENTIALS='/tmp/gcloud-service-key.json'
-            cd terraform/<< parameters.environment >>
+            cd terraform/${ENV}
             terraform plan -out=/tmp/tfplan -input=false
             terraform apply -input=false -auto-approve /tmp/tfplan
-      - store_artifacts:
-          path: /tmp/tfplan
-
-  apply-kubectl:
-    description: Update Kubernetes resources
-    parameters:
-      project_name:
-        type: string
-    steps:
-      - checkout
-      - attach_workspace:
-          at: /tmp
       - run:
-          name: Check whether app_image was passed over from previous (image build) job
+          name: Populate Kubernetes declaration with parameters and lint
           command: |
-            if ! [ -s /tmp/app_image ]
-            then
-              echo " app_image not specified "; exit 1
-            fi
-      - run:
-          name: Install dependencies
-          command: |
-            apk add gettext
-            gcloud components install kubectl
-      - run:
-          name: Populate Kubernetes parameters
-          command: PROJECT_NAME=<< parameters.project_name >> APP_IMAGE=`cat /tmp/app_image` envsubst < k8s/k8s.yml > k8s_filled.yml
-      - run:
-          name: Install kubeval and lint all Kubernetes declarations
-          command: |
-            wget https://github.com/garethr/kubeval/releases/download/0.7.3/kubeval-linux-amd64.tar.gz
-            tar xzvf kubeval-linux-amd64.tar.gz
-            chmod u+x kubeval
+            PROJECT_NAME=gke-${ENV} APP_IMAGE=`cat /tmp/app_image` envsubst < k8s/k8s.yml > k8s_filled.yml
             ./kubeval k8s_filled.yml
       - run:
+          name: Authenticate kubectl
+          command: gcloud container clusters get-credentials gke-cluster-${ENV} --zone europe-north1-a
+      - run:
           name: Apply kubectl
-          command: kubectl apply -f k8s_filled.yml && kubectl rollout status deployment/<< parameters.project_name >>
+          command: kubectl apply -f k8s_filled.yml && kubectl rollout status deployment/gke-${ENV}
+      - store_artifacts:
+          path:
+            - /tmp/tfplan
+            - /tmp/app_image
 
 jobs:
   test:
@@ -132,56 +92,38 @@ jobs:
           name: Run tests
           command: cd app && yarn test
 
-  build-and-push-image-dev:
+  deploy-dev:
     docker:
       - image: google/cloud-sdk:alpine
+    environment:
+      ENV: dev
+      TF_IN_AUTOMATION: "true"
     steps:
-      - build-and-push-image:
+      - deploy:
           gcloud_service_key: GCLOUD_SERVICE_KEY_DEV
           google_project_id: GOOGLE_PROJECT_ID_DEV
 
-  deploy-dev:
-    docker:
-      - image: hashicorp/terraform:light
-    steps:
-      - apply-terraform:
-          environment: "dev"
-      - apply-kubectl:
-          project_name: "gke-dev"
-
-  build-and-push-image-test:
+  deploy-test:
     docker:
       - image: google/cloud-sdk:alpine
+    environment:
+      ENV: test
+      TF_IN_AUTOMATION: "true"
     steps:
-      - build-and-push-image:
+      - deploy:
           gcloud_service_key: GCLOUD_SERVICE_KEY_TEST
           google_project_id: GOOGLE_PROJECT_ID_TEST
 
-  deploy-test:
-    docker:
-      - image: hashicorp/terraform:light
-    steps:
-      - apply-terraform:
-          environment: "test"
-      - apply-kubectl:
-          project_name: "gke-test"
-
-  build-and-push-image-prod:
-    docker:
-      - image: google/cloud-sdk:alpine
-    steps:
-      - build-and-push-image:
-          gcloud_service_key: GCLOUD_SERVICE_KEY_PROD
-          google_project_id: GOOGLE_PROJECT_ID_PROD
-
   deploy-prod:
     docker:
-      - image: hashicorp/terraform:light
+      - image: google/cloud-sdk:alpine
+    environment:
+      ENV: prod
+      TF_IN_AUTOMATION: "true"
     steps:
-      - apply-terraform:
-          environment: "prod"
-      - apply-kubectl:
-          project_name: "gke-prod"
+      - deploy:
+          gcloud_service_key: GCLOUD_SERVICE_KEY_PROD
+          google_project_id: GOOGLE_PROJECT_ID_PROD
 
 workflows:
   test-build-deploy:
@@ -189,45 +131,26 @@ workflows:
       - test
 
       # Push to any non-master branch triggers deployment to `dev` environment:
-      - build-and-push-image-dev:
-          requires:
-            - test
-          filters:
-            branches:
-              ignore:
-                - master
       - deploy-dev:
           requires:
-            - build-and-push-image-dev
+            - test
           filters:
             branches:
               ignore:
                 - master
 
       # Push to master branch triggers deployment to `test` environment:
-      - build-and-push-image-test:
-          requires:
-            - test
-          filters:
-            branches:
-              only: master
-      - deploy-test:
-          requires:
-            - build-and-push-image-test
-          filters:
-            branches:
-              only: master
-
-      # Push to master branch triggers deployment to `production` environment, with a further manual approval step in CircleCI UI:
-      # - build-and-push-image-prod: TODO use image built in test stage
+      # - deploy-test:
       #     requires:
       #       - test
       #     filters:
       #       branches:
       #         only: master
+
+      # Push to master branch triggers deployment to `production` environment, with a further manual approval step in CircleCI UI:
       # - deploy-prod:
       #     requires:
-      #       - build-and-push-image-prod
+      #       - test
       #     filters:
       #       branches:
       #         only: master
