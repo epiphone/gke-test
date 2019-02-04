@@ -9,6 +9,7 @@ commands:
       google_project_id:
         type: env_var_name
     steps:
+      - checkout
       - run:
           name: Install dependencies
           command: |
@@ -23,11 +24,10 @@ commands:
             echo ${<< parameters.gcloud_service_key >>} > /tmp/gcloud-service-key.json
             gcloud auth activate-service-account --key-file=/tmp/gcloud-service-key.json
             gcloud --quiet config set project ${<< parameters.google_project_id >>}
-      - setup_remote_docker
-      - checkout
       - run:
           name: Persist app image tag to make it available for later steps
           command: echo eu.gcr.io/${<< parameters.google_project_id >>}/gke-app:${CIRCLE_SHA1} > /tmp/app_image
+      - setup_remote_docker
       - run:
           name: Build Docker image
           command: |
