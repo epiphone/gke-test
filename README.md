@@ -52,3 +52,4 @@ In cases where you need to sidestep CI and deploy something locally:
 - clean up old container images from GCR
 - reduce duplication in CircleCI config
 - prompt for extra approval on infra changes in master
+- [static assets to Cloud Storage & CDN](https://cloud.google.com/load-balancing/docs/https/adding-a-backend-bucket-to-content-based-load-balancing#using_cloud_cdn_with_cloud_storage_buckets)

@@ -26,7 +26,7 @@ resource "kubernetes_deployment" "app" {
     }
 
     strategy {
-      type = "Recreate"
+      type = "Recreate" # Doesn't work ATM, check issue at https://github.com/terraform-providers/terraform-provider-kubernetes/issues/260
     }
 
     # Describes the pod that will be created if insufficient replicas are detected:
@@ -41,6 +41,11 @@ resource "kubernetes_deployment" "app" {
         container {
           image = "${var.app_image}"
           name  = "app"
+
+          env {
+            name  = "PORT"
+            value = 3000
+          }
 
           port {
             container_port = 3000
@@ -76,10 +81,10 @@ resource "kubernetes_service" "app" {
     session_affinity = "ClientIP"
 
     port {
-      port        = 80
-      target_port = 3000
+      port        = 80   # The port that will be exposed by this service.
+      target_port = 3000 # Number or name of the port to access on the pods targeted by the service
     }
 
-    type = "LoadBalancer"
+    type = "NodePort"
   }
 }

@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 const commitRef = process.env.APP_COMMIT_REF || "N/A";
 const buildDate = process.env.APP_BUILD_DATE || "N/A";
