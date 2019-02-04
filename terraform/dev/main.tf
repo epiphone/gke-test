@@ -26,3 +26,14 @@ module "gke" {
   region       = "${var.region}"
   network_name = "gke-network"
 }
+
+module "k8s" {
+  source = "../modules/k8s"
+
+  env                    = "${local.env}"
+  host                   = "${module.gke.host}"
+  client_certificate     = "${module.gke.client_certificate}"
+  client_key             = "${module.gke.client_key}"
+  cluster_ca_certificate = "${module.gke.cluster_ca_certificate}"
+  app_image              = "${var.app_image}"
+}
