@@ -68,8 +68,10 @@ commands:
           command: kubectl apply -f k8s_filled.yml && kubectl rollout status deployment/gke-${ENV}
       - store_artifacts:
           path:
-            - /tmp/tfplan
             - /tmp/app_image
+      - store_artifacts:
+          path:
+            - /tmp/tfplan
 
 jobs:
   test:

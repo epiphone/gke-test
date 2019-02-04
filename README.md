@@ -58,3 +58,5 @@ You can also sidestep CI and deploy locally:
 - reduce duplication in CircleCI config
 - prompt for extra approval on infra changes in master
 - [static assets to Cloud Storage & CDN](https://cloud.google.com/load-balancing/docs/https/adding-a-backend-bucket-to-content-based-load-balancing#using_cloud_cdn_with_cloud_storage_buckets)
+- don't rebuild docker image from `test` to `prod`?
+- smoke tests [in CI](https://github.com/eddiewebb/circleci-multi-cloud-k8s/blob/master/.circleci/config.yml)
