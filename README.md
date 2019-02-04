@@ -4,7 +4,6 @@
 Exploring Google Kubernetes Engine. Includes
 - a simple dockerized test app
 - Google Kubernetes Engine cluster & node pool
-- TODO Postgres instance on Cloud SQL
 - infrastructure defined with Terraform
 - multiple environments
 - CI pipeline on CircleCI
@@ -47,13 +46,14 @@ You can also sidestep CI and deploy locally:
 
 ## TODO
 
+- Postgres instance on Cloud SQL
+- prevent Cloud SQL destroy akin to Cloudformation `retain`: https://www.terraform.io/docs/configuration/resources.html#meta-parameters
 - private cluster
 - [load balancing](https://cloud.google.com/kubernetes-engine/docs/tutorials/http-balancer)
 - secrets
 - tune down Terraform IAM user role, least privilege
 - [regional GKE cluster](https://cloud.google.com/kubernetes-engine/docs/concepts/regional-clusters)
 - set Google Cloud provider services https://cloud.google.com/service-usage/docs/list-services
-- prevent Cloud SQL destroy akin to Cloudformation `retain`: https://www.terraform.io/docs/configuration/resources.html#meta-parameters
 - clean up old container images from GCR
 - reduce duplication in CircleCI config
 - prompt for extra approval on infra changes in master

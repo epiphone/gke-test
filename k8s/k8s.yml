@@ -24,6 +24,10 @@ spec:
   selector:
     matchLabels:
       app: ${PROJECT_NAME}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
   template:
     metadata:
       labels:
