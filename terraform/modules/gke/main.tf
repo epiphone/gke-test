@@ -23,6 +23,8 @@ resource "google_container_cluster" "gke_cluster" {
   # Use ABAC until official Kubernetes plugin supports RBAC.
   enable_legacy_abac = "true"
 
+  ip_allocation_policy {} # Enable alias IP addresses https://cloud.google.com/kubernetes-engine/docs/how-to/alias-ips
+
   lifecycle {
     ignore_changes = ["node_pool"]
   }
