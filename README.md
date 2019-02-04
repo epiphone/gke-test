@@ -35,13 +35,13 @@ The following steps need to be completed manually to set up the project before a
 You can also sidestep CI and deploy locally:
 
 1. [Login](https://www.terraform.io/docs/providers/google/provider_reference.html) to Google Cloud: `gcloud auth application-default login`
-1. Update infra: `cd terraform/dev && terraform apply`
+1. Update infra: `cd terraform/dev && terraform init && terraform apply`
 2. Follow [instructions](https://cloud.google.com/kubernetes-engine/docs/tutorials/hello-app) on building and pushing a Docker image to GKE:
     - `cd app`
     - `export PROJECT_ID="$(gcloud config get-value project -q)"`
     - `docker build -t gcr.io/${PROJECT_ID}/gke-app:v1 .`
     - `gcloud docker -- push gcr.io/${PROJECT_ID}/gke-app:v1`
-3. Authenticate `kubectl`: `gcloud container clusters get-credentials <CLUSTER NAME> --region <CLUSTER REGION>`
+3. Authenticate `kubectl`: `gcloud container clusters get-credentials $(terraform output cluster_name) --zone=$(terraform output cluster_zone)`
 4. Set Kubernetes variables: `PROJECT_NAME=gke-dev APP_IMAGE=eu.gcr.io/... envsubst < k8s/k8s.yml > k8s_filled.yml`
 5. Update Kubernetes resources: `kubectl apply -f k8s_filled.yml`
 
