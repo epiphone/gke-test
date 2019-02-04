@@ -25,6 +25,10 @@ resource "kubernetes_deployment" "app" {
       }
     }
 
+    strategy {
+      type = "Recreate"
+    }
+
     # Describes the pod that will be created if insufficient replicas are detected:
     template {
       metadata {
