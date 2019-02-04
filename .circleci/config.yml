@@ -19,6 +19,8 @@ commands:
             wget https://github.com/garethr/kubeval/releases/download/0.7.3/kubeval-linux-amd64.tar.gz
             tar xzvf kubeval-linux-amd64.tar.gz
             chmod u+x kubeval
+
+      # Build docker image & push to GCR:
       - run:
           name: Authenticate Google Cloud client
           command: |
@@ -42,6 +44,8 @@ commands:
           command: |
             gcloud auth configure-docker
             docker push `cat /tmp/app_image`
+
+      # Update infra:
       - run:
           name: Initialize && validate Terraform
           command: |
@@ -56,6 +60,8 @@ commands:
             cd terraform/${ENV}
             terraform plan -out=/tmp/tfplan -input=false
             terraform apply -input=false -auto-approve /tmp/tfplan
+
+      # Update Kubernetes application:
       - run:
           name: Populate Kubernetes declaration with parameters and lint
           command: |
@@ -63,7 +69,9 @@ commands:
             ./kubeval k8s_filled.yml
       - run:
           name: Authenticate kubectl
-          command: gcloud container clusters get-credentials $(terraform output cluster_name) --zone $(terraform output cluster_zone)
+          command: |
+            cd terraform/${ENV}
+            gcloud container clusters get-credentials $(terraform output cluster_name) --zone $(terraform output cluster_zone)
       - run:
           name: Apply kubectl
           command: kubectl apply -f k8s_filled.yml && kubectl rollout status deployment/gke-${ENV}
