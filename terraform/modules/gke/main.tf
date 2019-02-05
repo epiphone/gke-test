@@ -6,21 +6,12 @@ resource "google_compute_network" "gke_network" {
   auto_create_subnetworks = false
 }
 
-resource "google_compute_subnetwork" "gke_subnetwork" {
-  provider                 = "google"
-  name                     = "${var.network_name}"
-  ip_cidr_range            = "10.127.0.0/20"
-  network                  = "${google_compute_network.gke_network.self_link}"
-  region                   = "${var.region}"
-  private_ip_google_access = true
-}
-
 resource "google_container_cluster" "gke_cluster" {
-  provider                 = "google-beta"
-  min_master_version       = "${data.google_container_engine_versions.gke_versions.latest_master_version}"
-  name                     = "gke-cluster-${var.env}"
-  network                  = "${google_compute_network.gke_network.name}"
-  subnetwork               = "${google_compute_subnetwork.gke_subnetwork.name}"
+  provider           = "google-beta"
+  min_master_version = "${data.google_container_engine_versions.gke_versions.latest_master_version}"
+  name               = "gke-cluster-${var.env}"
+  network            = "${google_compute_network.gke_network.name}"
+
   remove_default_node_pool = true
 
   addons_config {
@@ -30,7 +21,8 @@ resource "google_container_cluster" "gke_cluster" {
   }
 
   private_cluster_config {
-    enable_private_nodes = true
+    master_ipv4_cidr_block = "172.16.0.0/28"
+    enable_private_nodes   = true
   }
 
   # Disable Basic Auth
@@ -39,11 +31,23 @@ resource "google_container_cluster" "gke_cluster" {
     password = ""
   }
 
+  # Kubernetes master's external IP is only accessible from ${var.kubernetes_master_allowed_ip}
+  master_authorized_networks_config {
+    cidr_blocks = [
+      {
+        cidr_block = "${var.k8s_master_allowed_ip}/32"
+      },
+    ]
+  }
+
   # Use ABAC until official Kubernetes plugin supports RBAC
   enable_legacy_abac = "true"
 
   # Enable alias IP addresses https://cloud.google.com/kubernetes-engine/docs/how-to/alias-ips
-  ip_allocation_policy {}
+  ip_allocation_policy {
+    create_subnetwork = true
+    subnetwork_name   = "${var.network_name}"
+  }
 
   lifecycle {
     ignore_changes = ["node_pool"]

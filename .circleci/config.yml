@@ -57,6 +57,7 @@ commands:
           name: Apply Terraform update
           command: |
             export GOOGLE_APPLICATION_CREDENTIALS='/tmp/gcloud-service-key.json'
+            export TF_VAR_k8s_master_allowed_ip='${K8S_MASTER_ALLOWED_IP}/32'
             cd terraform/${ENV}
             terraform plan -out=/tmp/tfplan -input=false
             terraform apply -input=false -auto-approve /tmp/tfplan
@@ -71,13 +72,26 @@ commands:
           name: Authenticate kubectl
           command: |
             export GOOGLE_APPLICATION_CREDENTIALS='/tmp/gcloud-service-key.json'
+            export TF_VAR_k8s_master_allowed_ip='${K8S_MASTER_ALLOWED_IP}/32'
             cd terraform/${ENV}
             terraform refresh
             gcloud container clusters get-credentials $(terraform output cluster_name) --zone $(terraform output cluster_zone)
       - run:
+          name: Temporarily add CI server to k8s master allowed IPs
+          command: |
+            gcloud container clusters update $(terraform output cluster_name) \
+              --master-authorized-networks=$(terraform output k8s_master_allowed_ip)/32,$(dig +short myip.opendns.com @resolver1.opendns.com)/32 \
+              --zone=$(terraform output cluster_zone)
+      - run:
           name: Apply kubectl
           command: kubectl apply -f k8s_filled.yml && kubectl rollout status deployment/gke-${ENV}
-
+      - run:
+          name: Remove CI server from k8s master allowed IPs
+          command: |
+            gcloud container clusters update $(terraform output cluster_name) \
+              --master-authorized-networks=$(terraform output k8s_master_allowed_ip)/32 \
+              --zone=$(terraform output cluster_zone)
+          when: always
       - store_artifacts:
           path: /tmp/app_image
       - store_artifacts:
