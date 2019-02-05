@@ -1,8 +1,4 @@
-# TODO use another VPC for db?
-# resource "google_compute_network" "private_network" {
-#     name       = "private_network"
-# }
-
+# Reserve a static internal IP address for Cloud SQL:
 resource "google_compute_global_address" "private_ip_address" {
   provider      = "google-beta"
   name          = "cloud-sql-private-ip"
