@@ -14,12 +14,6 @@ resource "google_container_cluster" "gke_cluster" {
 
   remove_default_node_pool = true
 
-  addons_config {
-    http_load_balancing {
-      disabled = true
-    }
-  }
-
   private_cluster_config {
     master_ipv4_cidr_block = "172.16.0.0/28"
     enable_private_nodes   = true
