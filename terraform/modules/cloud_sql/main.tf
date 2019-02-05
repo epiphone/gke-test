@@ -16,9 +16,10 @@ resource "google_service_networking_connection" "private_vpc_connection" {
 }
 
 resource "google_sql_database_instance" "instance" {
-  provider   = "google"
-  depends_on = ["google_service_networking_connection.private_vpc_connection"]
-  name       = "gke-private-instance"
+  provider         = "google"
+  database_version = "POSTGRES_9.6"
+  depends_on       = ["google_service_networking_connection.private_vpc_connection"]
+  name             = "gke-private-instance"
 
   settings {
     tier = "db-f1-micro"
