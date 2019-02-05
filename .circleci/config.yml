@@ -67,12 +67,12 @@ commands:
       - run:
           name: Authenticate kubectl
           command: |
-            export GOOGLE_APPLICATION_CREDENTIALS='/tmp/gcloud-service-key.json'
             cd terraform/${ENV}
             gcloud container clusters get-credentials $(terraform output cluster_name) --zone $(terraform output cluster_zone)
       - run:
           name: Temporarily add CI server to k8s master allowed IPs
           command: |
+            cd terraform/${ENV}
             gcloud container clusters update $(terraform output cluster_name) \
               --master-authorized-networks=$(terraform output k8s_master_allowed_ip)/32,$(dig +short myip.opendns.com @resolver1.opendns.com)/32 \
               --zone=$(terraform output cluster_zone)
@@ -82,6 +82,7 @@ commands:
       - run:
           name: Remove CI server from k8s master allowed IPs
           command: |
+            cd terraform/${ENV}
             gcloud container clusters update $(terraform output cluster_name) \
               --master-authorized-networks=$(terraform output k8s_master_allowed_ip)/32 \
               --zone=$(terraform output cluster_zone)

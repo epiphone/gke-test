@@ -3,7 +3,7 @@
 
 Exploring Google Kubernetes Engine. Includes
 - a simple dockerized test app
-- Google Kubernetes Engine cluster & node pool
+- A [private](https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters) GKE cluster with [container-native load-balancing](https://cloud.google.com/kubernetes-engine/docs/how-to/container-native-load-balancing) and a single node pool
 - infrastructure defined with Terraform
 - multiple environments
 - CI pipeline on CircleCI
@@ -27,7 +27,9 @@ The following steps need to be completed manually to set up the project before a
     - set up a service IAM account to be used by Terraform. Attach the `Editor` role to the created user
     - run `cd terraform/<ENV> && terraform init` to initialize Terraform providers
 3. Add environment variables to your CircleCI config
-  - `GCLOUD_SERVICE_KEY_DEV` and `GOOGLE_PROJECT_ID_DEV` plus the same for `_TEST` and `_PROD`
+  - `GOOGLE_PROJECT_ID_DEV`, `GOOGLE_PROJECT_ID_TEST` and `GOOGLE_PROJECT_ID_PROD`: Environment-specific Google project id
+  - `GCLOUD_SERVICE_KEY_DEV`, `GCLOUD_SERVICE_KEY_TEST` and `GCLOUD_SERVICE_KEY_PROD`: Environment-specific service account key
+  - `K8S_MASTER_ALLOWED_IP`: IP from which to access the cluster master's public endpoint, [read more](https://cloud.google.com/kubernetes-engine/docs/how-to/authorized-networks)
 
 ## Manual deployment
 
