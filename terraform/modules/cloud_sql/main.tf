@@ -5,7 +5,7 @@
 
 resource "google_compute_global_address" "private_ip_address" {
   provider      = "google-beta"
-  name          = "cloud_sql_private_ip"
+  name          = "cloud-sql-private-ip"
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
   prefix_length = 16
