@@ -19,6 +19,14 @@ provider "google" {
   zone    = "${var.zone}"
 }
 
+provider "google-beta" {
+  version = "1.20.0"
+
+  project = "${var.project_id}"
+  region  = "${var.region}"
+  zone    = "${var.zone}"
+}
+
 module "gke" {
   source = "../modules/gke"
 

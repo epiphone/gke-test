@@ -49,7 +49,7 @@ You can also sidestep CI and deploy locally:
 - Postgres instance on Cloud SQL
 - prevent Cloud SQL destroy akin to Cloudformation `retain`: https://www.terraform.io/docs/configuration/resources.html#meta-parameters
 - private cluster
-- [load balancing](https://cloud.google.com/kubernetes-engine/docs/tutorials/http-balancer)
+- HTTPS
 - secrets
 - tune down Terraform IAM user role, least privilege
 - [regional GKE cluster](https://cloud.google.com/kubernetes-engine/docs/concepts/regional-clusters)
@@ -60,3 +60,4 @@ You can also sidestep CI and deploy locally:
 - [static assets to Cloud Storage & CDN](https://cloud.google.com/load-balancing/docs/https/adding-a-backend-bucket-to-content-based-load-balancing#using_cloud_cdn_with_cloud_storage_buckets)
 - don't rebuild docker image from `test` to `prod`?
 - smoke tests [in CI](https://github.com/eddiewebb/circleci-multi-cloud-k8s/blob/master/.circleci/config.yml)
+- structured logging to Stackdriver
