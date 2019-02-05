@@ -2,10 +2,9 @@
 [![CircleCI](https://circleci.com/gh/epiphone/gke-terraform-example/tree/master.svg?style=svg)](https://circleci.com/gh/epiphone/gke-terraform-example/tree/master)
 
 Exploring Google Kubernetes Engine. Includes
-- a simple dockerized test app
-- A [private](https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters) GKE cluster with [container-native load-balancing](https://cloud.google.com/kubernetes-engine/docs/how-to/container-native-load-balancing) and a single node pool
-- infrastructure defined with Terraform
-- multi-env CI pipeline on CircleCI
+- A [**private** GKE cluster](https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters) with [container-native load-balancing](https://cloud.google.com/kubernetes-engine/docs/how-to/container-native-load-balancing) and a single node pool
+- infrastructure defined with **Terraform**
+- **multi-env** CI pipeline on **CircleCI**
   - push to any non-master branch triggers update to `dev` environment
   - push to `master` branch triggers update to `test` environment
   - additional approval step at CircleCI UI after `test` environment update triggers `prod` environment update
@@ -44,7 +43,7 @@ You can also sidestep CI and deploy locally:
 
 ## TODO
 
-- Postgres instance on Cloud SQL
+- Postgres instance on Cloud SQL, connected to GKE via [private IP](https://cloud.google.com/sql/docs/postgres/configure-private-ip)
 - prevent Cloud SQL destroy akin to Cloudformation `retain`: https://www.terraform.io/docs/configuration/resources.html#meta-parameters
 - HTTPS
 - secrets

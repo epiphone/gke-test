@@ -35,3 +35,9 @@ module "gke" {
   network_name          = "gke-network"
   k8s_master_allowed_ip = "${var.k8s_master_allowed_ip}"
 }
+
+module "cloud_sql" {
+  source = "../modules/cloud_sql"
+
+  network = "${module.gke.network}"
+}

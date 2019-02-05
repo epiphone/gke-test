@@ -17,6 +17,10 @@ resource "google_container_cluster" "gke_cluster" {
     http_load_balancing {
       disabled = false
     }
+
+    kubernetes_dashboard {
+      disabled = true
+    }
   }
 
   private_cluster_config {

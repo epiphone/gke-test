@@ -25,3 +25,7 @@ output "host" {
   value     = "${google_container_cluster.gke_cluster.endpoint}"
   sensitive = true
 }
+
+output "network" {
+  value = "${google_compute_network.gke_network.self_link}"
+}
