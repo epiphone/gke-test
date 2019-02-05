@@ -24,8 +24,8 @@ commands:
       - run:
           name: Authenticate Google Cloud client
           command: |
-            echo ${<< parameters.gcloud_service_key >>} > /tmp/gcloud-service-key.json
-            gcloud auth activate-service-account --key-file=/tmp/gcloud-service-key.json
+            echo ${<< parameters.gcloud_service_key >>} > ${GOOGLE_APPLICATION_CREDENTIALS}
+            gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
             gcloud --quiet config set project ${<< parameters.google_project_id >>}
       - run:
           name: Persist app image tag to make it available for later steps
@@ -49,7 +49,6 @@ commands:
       - run:
           name: Initialize, validate and apply Terraform
           command: |
-            export GOOGLE_APPLICATION_CREDENTIALS='/tmp/gcloud-service-key.json'
             export TF_VAR_k8s_master_allowed_ip=$K8S_MASTER_ALLOWED_IP
             cd terraform/${ENV}
             terraform init -input=false
@@ -120,6 +119,7 @@ jobs:
       - image: google/cloud-sdk:alpine
     environment:
       ENV: dev
+      GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcloud-service-key.json
       TF_IN_AUTOMATION: "true"
     steps:
       - deploy:
@@ -131,6 +131,7 @@ jobs:
       - image: google/cloud-sdk:alpine
     environment:
       ENV: test
+      GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcloud-service-key.json
       TF_IN_AUTOMATION: "true"
     steps:
       - deploy:
@@ -142,6 +143,7 @@ jobs:
       - image: google/cloud-sdk:alpine
     environment:
       ENV: prod
+      GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcloud-service-key.json
       TF_IN_AUTOMATION: "true"
     steps:
       - deploy:
