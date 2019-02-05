@@ -73,6 +73,7 @@ commands:
           command: |
             cd terraform/${ENV}
             gcloud container clusters update $(terraform output cluster_name) \
+              --enable-master-authorized-networks \
               --master-authorized-networks=$(terraform output k8s_master_allowed_ip)/32,$(dig +short myip.opendns.com @resolver1.opendns.com)/32 \
               --zone=$(terraform output cluster_zone)
       - run:
@@ -83,6 +84,7 @@ commands:
           command: |
             cd terraform/${ENV}
             gcloud container clusters update $(terraform output cluster_name) \
+              --enable-master-authorized-networks \
               --master-authorized-networks=$(terraform output k8s_master_allowed_ip)/32 \
               --zone=$(terraform output cluster_zone)
           when: always
