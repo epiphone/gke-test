@@ -50,7 +50,7 @@ commands:
           name: Initialize, validate and apply Terraform
           command: |
             export GOOGLE_APPLICATION_CREDENTIALS='/tmp/gcloud-service-key.json'
-            export TF_VAR_k8s_master_allowed_ip='${K8S_MASTER_ALLOWED_IP}'
+            export TF_VAR_k8s_master_allowed_ip=$K8S_MASTER_ALLOWED_IP
             cd terraform/${ENV}
             terraform init -input=false
             terraform validate
