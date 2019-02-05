@@ -47,20 +47,16 @@ commands:
 
       # Update infra:
       - run:
-          name: Initialize && validate Terraform
-          command: |
-            cd terraform/${ENV}
-            export GOOGLE_APPLICATION_CREDENTIALS='/tmp/gcloud-service-key.json'
-            terraform init -input=false
-            terraform validate
-      - run:
-          name: Apply Terraform update
+          name: Initialize, validate and apply Terraform
           command: |
             export GOOGLE_APPLICATION_CREDENTIALS='/tmp/gcloud-service-key.json'
             export TF_VAR_k8s_master_allowed_ip='${K8S_MASTER_ALLOWED_IP}/32'
             cd terraform/${ENV}
+            terraform init -input=false
+            terraform validate
             terraform plan -out=/tmp/tfplan -input=false
             terraform apply -input=false -auto-approve /tmp/tfplan
+            terraform refresh
 
       # Update Kubernetes application:
       - run:
@@ -72,9 +68,7 @@ commands:
           name: Authenticate kubectl
           command: |
             export GOOGLE_APPLICATION_CREDENTIALS='/tmp/gcloud-service-key.json'
-            export TF_VAR_k8s_master_allowed_ip='${K8S_MASTER_ALLOWED_IP}/32'
             cd terraform/${ENV}
-            terraform refresh
             gcloud container clusters get-credentials $(terraform output cluster_name) --zone $(terraform output cluster_zone)
       - run:
           name: Temporarily add CI server to k8s master allowed IPs
