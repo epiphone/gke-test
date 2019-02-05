@@ -17,7 +17,7 @@ resource "google_service_networking_connection" "private_vpc_connection" {
 
 resource "google_sql_database_instance" "instance" {
   provider         = "google"
-  database_version = "POSTGRES_9.6"
+  database_version = "POSTGRES_9_6"
   depends_on       = ["google_service_networking_connection.private_vpc_connection"]
   name             = "gke-private-instance"
 

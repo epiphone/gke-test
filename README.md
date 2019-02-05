@@ -17,7 +17,7 @@ The following steps need to be completed manually before automation kicks in:
 1. Create a new Google Cloud project per each environment
 2. For each Google Cloud project,
     - set up a Cloud Storage bucket for storing [remote Terraform state](https://www.terraform.io/docs/backends/types/gcs.html)
-    - set up a service IAM account to be used by Terraform. Attach the `Editor` role to the created user
+    - set up a service IAM account to be used by Terraform. Attach the `Editor` and `Compute Network Agent` roles to the created user
     - run `cd terraform/<ENV> && terraform init` to initialize Terraform providers
 3. Set environment variables in your CircleCI project:
     - `GOOGLE_PROJECT_ID_DEV`, `GOOGLE_PROJECT_ID_TEST` and `GOOGLE_PROJECT_ID_PROD`: environment-specific Google project id
@@ -46,10 +46,8 @@ You can also sidestep CI and deploy locally:
 - Postgres instance on Cloud SQL, connected to GKE via [private IP](https://cloud.google.com/sql/docs/postgres/configure-private-ip)
 - prevent Cloud SQL destroy akin to Cloudformation `retain`: https://www.terraform.io/docs/configuration/resources.html#meta-parameters
 - HTTPS
-- secrets
 - tune down Terraform IAM user role, least privilege
 - [regional GKE cluster](https://cloud.google.com/kubernetes-engine/docs/concepts/regional-clusters)
-- set Google Cloud provider services https://cloud.google.com/service-usage/docs/list-services
 - clean up old container images from GCR
 - reduce duplication in CircleCI config
 - prompt for extra approval on infra changes in master
