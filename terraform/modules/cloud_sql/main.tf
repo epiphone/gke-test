@@ -1,3 +1,14 @@
+local {
+  services = [
+    "servicenetworking.googleapis.com",
+  ]
+}
+
+resource "google_project_service" "service" {
+  count   = "${length(local.services)}"
+  service = "${element(local.services, count.index)}"
+}
+
 # Reserve a static internal IP address for Cloud SQL:
 resource "google_compute_global_address" "private_ip_address" {
   provider      = "google-beta"
