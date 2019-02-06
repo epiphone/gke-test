@@ -42,10 +42,12 @@ You can also sidestep CI and deploy locally:
 6. Set Kubernetes variables: `PROJECT_NAME=gke-dev APP_IMAGE=eu.gcr.io/... envsubst < k8s/k8s.yml > k8s_filled.yml`
 7. Update Kubernetes resources: `kubectl apply -f k8s_filled.yml`
 
+Read [here](https://cloud.google.com/sql/docs/postgres/quickstart-proxy-test) on how to connect to the Cloud SQL instance with a local `psql` client.
+
 ## TODO
 
-- Postgres instance on Cloud SQL, connected to GKE via [private IP](https://cloud.google.com/sql/docs/postgres/configure-private-ip)
-- prevent Cloud SQL destroy akin to Cloudformation `retain`: https://www.terraform.io/docs/configuration/resources.html#meta-parameters
+- Cloud SQL disable public IP: Terraform's `ip_configuration.ipv4_enabled = false` setting seems to bear no effect
+- Cloud SQL high availability
 - HTTPS
 - tune down Terraform IAM user role, least privilege
 - [regional GKE cluster](https://cloud.google.com/kubernetes-engine/docs/concepts/regional-clusters)

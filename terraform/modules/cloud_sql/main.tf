@@ -21,12 +21,23 @@ resource "google_sql_database_instance" "instance" {
   depends_on       = ["google_service_networking_connection.private_vpc_connection"]
   name             = "gke-private-postgres"
 
+  lifecycle {
+    prevent_destroy = true
+  }
+
   settings {
     tier = "db-f1-micro"
 
     ip_configuration {
-      ipv4_enabled    = false
-      private_network = "${var.network}"
+      # Instance is not publicly accessible:
+      authorized_networks = []
+      ipv4_enabled        = false
+      private_network     = "${var.network}"
     }
   }
+}
+
+resource "google_sql_user" "app_user" {
+  name     = "gke"
+  instance = "${google_sql_database_instance.instance.name}"
 }
