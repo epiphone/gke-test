@@ -1,7 +1,7 @@
 # gke-test
 [![CircleCI](https://circleci.com/gh/epiphone/gke-terraform-example/tree/master.svg?style=svg)](https://circleci.com/gh/epiphone/gke-terraform-example/tree/master)
 
-Exploring Google Kubernetes Engine. Includes
+A sample setup of Google Kubernetes Engine & Cloud SQL. Consists of
 - A [VPC-native](https://cloud.google.com/kubernetes-engine/docs/how-to/alias-ips) and [**private**](https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters) GKE cluster with [container-native load-balancing](https://cloud.google.com/kubernetes-engine/docs/how-to/container-native-load-balancing) and a single node pool
   - access to the cluster master is limited to a single whitelisted IP: check the `K8S_MASTER_ALLOWED_IP` env variable below
 - Postgres Cloud SQL instance with [private networking](https://cloud.google.com/blog/products/databases/introducing-private-networking-connection-for-cloud-sql)
@@ -56,17 +56,15 @@ You can also sidestep CI and deploy locally:
 
 Read [here](https://cloud.google.com/sql/docs/postgres/quickstart-proxy-test) on how to connect to the Cloud SQL instance with a local `psql` client.
 
-## TODO
+## Further work & improvements
 
 - Cloud SQL disable public IP: Terraform's `ip_configuration.ipv4_enabled = false` setting seems to bear no effect
-- Cloud SQL high availability
-- HTTPS
-- tune down Terraform IAM user role, least privilege
+- Cloud SQL high availability & automated backups
+- [static assets to Cloud Storage & CDN](https://cloud.google.com/load-balancing/docs/https/adding-a-backend-bucket-to-content-based-load-balancing#using_cloud_cdn_with_cloud_storage_buckets)
+- domain and SSL
+- tune down the service accounts privileges
 - [regional GKE cluster](https://cloud.google.com/kubernetes-engine/docs/concepts/regional-clusters)
 - clean up old container images from GCR
-- reduce duplication in CircleCI config
-- prompt for extra approval on infra changes in master
-- [static assets to Cloud Storage & CDN](https://cloud.google.com/load-balancing/docs/https/adding-a-backend-bucket-to-content-based-load-balancing#using_cloud_cdn_with_cloud_storage_buckets)
+- prompt for extra approval on infra changes in master?
 - don't rebuild docker image from `test` to `prod`?
-- smoke tests [in CI](https://github.com/eddiewebb/circleci-multi-cloud-k8s/blob/master/.circleci/config.yml)
 - structured logging to Stackdriver
