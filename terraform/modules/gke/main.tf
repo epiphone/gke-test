@@ -1,17 +1,4 @@
-local {
-  services = [
-    "compute.googleapis.com",
-    "container.googleapis.com",
-    "containerregistry.googleapis.com",
-  ]
-}
-
 data "google_container_engine_versions" "gke_versions" {}
-
-resource "google_project_service" "service" {
-  count   = "${length(local.services)}"
-  service = "${element(local.services, count.index)}"
-}
 
 resource "google_compute_network" "gke_network" {
   provider                = "google"
