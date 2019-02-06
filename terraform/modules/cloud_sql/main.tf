@@ -19,12 +19,12 @@ resource "google_sql_database_instance" "instance" {
   provider         = "google"
   database_version = "POSTGRES_9_6"
   depends_on       = ["google_service_networking_connection.private_vpc_connection"]
-  name             = "gke-private-db"
+  name             = "gke-private-instance"
   region           = "${var.region}"
 
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
+  lifecycle {
+    prevent_destroy = true
+  }
 
   settings {
     tier = "db-f1-micro"
