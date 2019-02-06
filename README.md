@@ -21,17 +21,19 @@ The following steps need to be completed manually before automation kicks in:
     - set up a service IAM account to be used by Terraform. Attach the `Editor` and `Compute Network Agent` roles to the created user
     - [login](https://cloud.google.com/sdk/gcloud/reference/auth/activate-service-account) with the service account
     - run `cd terraform/<ENV> && terraform init` to initialize Terraform providers
-3. Set environment variables in your CircleCI project:
-    - `GOOGLE_PROJECT_ID_DEV`, `GOOGLE_PROJECT_ID_TEST` and `GOOGLE_PROJECT_ID_PROD`: environment-specific Google project id
-    - `GCLOUD_SERVICE_KEY_DEV`, `GCLOUD_SERVICE_KEY_TEST` and `GCLOUD_SERVICE_KEY_PROD`: environment-specific service account key
+3. Set environment variables in your CircleCI project (replacing `ENV` with an uppercase `DEV`, `TEST` and `PROD`):
+    - `GOOGLE_PROJECT_ID_<ENV>`: environment-specific Google project id
+    - `GCLOUD_SERVICE_KEY_<ENV>`: environment-specific service account key
+    - `DB_PASSWORD_<ENV>`: environment-specific password for the Postgres user that the application uses
     - `K8S_MASTER_ALLOWED_IP`: IP from which to access cluster master's public endpoint, i.e. the IP where you run `kubectl` at ([read more](https://cloud.google.com/kubernetes-engine/docs/how-to/authorized-networks))
-      - In CircleCI we temporarily add the test host's IP to cluster master's whitelist in order to run `kubectl`
+      - In CircleCI we temporarily whitelist the test host IP in order to run `kubectl`
 4. [Enable](https://cloud.google.com/apis/docs/enable-disable-apis) the following Google Cloud APIs:
+    - `cloudresourcemanager.googleapis.com`
     - `compute.googleapis.com`
     - `container.googleapis.com`
     - `containerregistry.googleapis.com`
     - `servicenetworking.googleapis.com`
-
+    - `sqladmin.googleapis.com`
 
 ## Manual deployment
 

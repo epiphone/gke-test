@@ -74,6 +74,7 @@ commands:
             export PGPASSWORD=$(terraform output db_password)
             export PGPORT=5432
 
+            cd ..
             envsubst < k8s/k8s.yml > k8s_filled.yml
             ./kubeval k8s_filled.yml
       - run:
