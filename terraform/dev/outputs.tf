@@ -9,3 +9,20 @@ output "cluster_zone" {
 output "k8s_master_allowed_ip" {
   value = "${var.k8s_master_allowed_ip}"
 }
+
+output "db_connection_name" {
+  value = "${module.cloud_sql.connection_name}"
+}
+
+output "db_host" {
+  value = "${module.cloud_sql.host}"
+}
+
+output "db_username" {
+  value = "${module.cloud_sql.username}"
+}
+
+output "db_password" {
+  value     = "${module.cloud_sql.password}"
+  sensitive = true
+}
