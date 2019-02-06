@@ -3,7 +3,7 @@ output "connection_name" {
 }
 
 output "host" {
-  value = "${google_sql_database_instance.instance.ip_address}"
+  value = "${element(google_sql_database_instance.instance.ip_address, index(google_sql_database_instance.instance.ip_address.type, "PRIVATE"))}"
 }
 
 output "username" {
