@@ -2,9 +2,12 @@
 [![CircleCI](https://circleci.com/gh/epiphone/gke-terraform-example/tree/master.svg?style=svg)](https://circleci.com/gh/epiphone/gke-terraform-example/tree/master)
 
 Exploring Google Kubernetes Engine. Includes
-- A [**private** GKE cluster](https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters) with [container-native load-balancing](https://cloud.google.com/kubernetes-engine/docs/how-to/container-native-load-balancing) and a single node pool
+- A [VPC-native](https://cloud.google.com/kubernetes-engine/docs/how-to/alias-ips) and [**private**](https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters) GKE cluster with [container-native load-balancing](https://cloud.google.com/kubernetes-engine/docs/how-to/container-native-load-balancing) and a single node pool
+  - access to the cluster master is limited to a single whitelisted IP: check the `K8S_MASTER_ALLOWED_IP` env variable below
 - Postgres Cloud SQL instance with [private networking](https://cloud.google.com/blog/products/databases/introducing-private-networking-connection-for-cloud-sql)
-- infrastructure defined with **Terraform**
+  - Cloud SQL is connected to GKE through a [private IP](https://cloud.google.com/sql/docs/mysql/connect-kubernetes-engine#private-ip), ensuring db traffic is never exposed to the public internet
+- infrastructure defined with **Terraform**, Kubernetes application with [regular Kubernetes .yml notation](/k8s/k8s.yml)
+  - I found the [Kubernetes Terraform provider](https://github.com/terraform-providers/terraform-provider-kubernetes) a bit lacking as its missing for example an Ingress type, hence the `.yml`s
 - **multi-env** CI pipeline on **CircleCI**
   - push to any non-master branch triggers update to `dev` environment
   - push to `master` branch triggers update to `test` environment
