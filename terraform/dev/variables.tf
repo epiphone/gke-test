@@ -1,6 +1,5 @@
 variable "project_id" {
-  type    = "string"
-  default = "gke-dev-230012"
+  type = "string"
 }
 
 variable "region" {

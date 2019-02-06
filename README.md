@@ -19,6 +19,7 @@ The following steps need to be completed manually before automation kicks in:
 2. For each Google Cloud project,
     - set up a Cloud Storage bucket for storing [remote Terraform state](https://www.terraform.io/docs/backends/types/gcs.html)
     - set up a service IAM account to be used by Terraform. Attach the `Editor` and `Compute Network Agent` roles to the created user
+    - [login](https://cloud.google.com/sdk/gcloud/reference/auth/activate-service-account) with the service account
     - run `cd terraform/<ENV> && terraform init` to initialize Terraform providers
 3. Set environment variables in your CircleCI project:
     - `GOOGLE_PROJECT_ID_DEV`, `GOOGLE_PROJECT_ID_TEST` and `GOOGLE_PROJECT_ID_PROD`: environment-specific Google project id

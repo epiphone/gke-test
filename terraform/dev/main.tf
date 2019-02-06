@@ -6,8 +6,7 @@ terraform {
   required_version = "0.11.11"
 
   backend "gcs" {
-    bucket = "tf-state-gke-dev"
-    prefix = "terraform-state-dev"
+    bucket = "gke-tfstate-dev"
   }
 }
 
