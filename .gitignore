@@ -62,3 +62,4 @@ typings/
 .terraform/
 *.tfvars
 *-credentials.json
+terraform.tfstate.*.backup
