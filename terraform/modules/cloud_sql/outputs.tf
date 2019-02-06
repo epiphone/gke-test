@@ -1,10 +1,9 @@
-output "connection_name" {
-  value = "${google_sql_database_instance.instance.connection_name}"
+output "db_name" {
+  value = "${google_sql_database.app.db_name}"
 }
 
 output "host" {
-  # value = "${element(google_sql_database_instance.instance.ip_address, index(google_sql_database_instance.instance.ip_address.*.type, "PRIVATE"))}"
-  value = "${google_sql_database_instance.instance.ip_address}"
+  value = "${google_sql_database_instance.instance.ip_address.1.ip_address}"
 }
 
 output "username" {

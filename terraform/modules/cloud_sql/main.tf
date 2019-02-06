@@ -44,7 +44,7 @@ resource "google_sql_user" "app_user" {
   password = "${var.password}"
 }
 
-resource "google_sql_database" "users" {
+resource "google_sql_database" "app" {
   name     = "${var.db_name}"
   instance = "${google_sql_database_instance.instance.name}"
 }

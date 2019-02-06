@@ -64,7 +64,16 @@ commands:
       - run:
           name: Populate Kubernetes declaration with parameters and lint
           command: |
-            PROJECT_NAME=gke-${ENV} APP_IMAGE=`cat /tmp/app_image` envsubst < k8s/k8s.yml > k8s_filled.yml
+            cd terraform/${ENV}
+            export PROJECT_NAME=gke-${ENV}
+            export APP_IMAGE=`cat /tmp/app_image`
+            export PGHOST=$(terraform output db_host)
+            export PGUSER=$(terraform output db_username)
+            export PGDATABASE=$(terraform output db_name)
+            export PGPASSWORD=$(terraform output db_password)
+            export PGPORT=5432
+
+            envsubst < k8s/k8s.yml > k8s_filled.yml
             ./kubeval k8s_filled.yml
       - run:
           name: Authenticate kubectl

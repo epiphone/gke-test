@@ -18,6 +18,10 @@ output "db_host" {
   value = "${module.cloud_sql.host}"
 }
 
+output "db_name" {
+  value = "${module.cloud_sql.db_name}"
+}
+
 output "db_username" {
   value = "${module.cloud_sql.username}"
 }
