@@ -3,6 +3,7 @@
 
 Exploring Google Kubernetes Engine. Includes
 - A [**private** GKE cluster](https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters) with [container-native load-balancing](https://cloud.google.com/kubernetes-engine/docs/how-to/container-native-load-balancing) and a single node pool
+- Postgres Cloud SQL instance with [private networking](https://cloud.google.com/blog/products/databases/introducing-private-networking-connection-for-cloud-sql)
 - infrastructure defined with **Terraform**
 - **multi-env** CI pipeline on **CircleCI**
   - push to any non-master branch triggers update to `dev` environment
