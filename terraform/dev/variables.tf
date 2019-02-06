@@ -17,3 +17,7 @@ variable "k8s_master_allowed_ip" {
   type        = "string"
   description = "Kubernetes cluster master's external IP is only accessible from this IP"
 }
+
+variable "db_password" {
+  type = "string"
+}

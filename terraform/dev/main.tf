@@ -39,5 +39,8 @@ module "gke" {
 module "cloud_sql" {
   source = "../modules/cloud_sql"
 
-  network = "${module.gke.network}"
+  network  = "${module.gke.network}"
+  db_name  = "gke-${local.env}"
+  username = "gke-${local.env}"
+  password = "${var.db_password}"
 }
