@@ -1,5 +1,5 @@
 output "db_name" {
-  value = "${google_sql_database.app.db_name}"
+  value = "${google_sql_database.app.name}"
 }
 
 output "host" {
