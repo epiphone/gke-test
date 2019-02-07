@@ -45,8 +45,8 @@ module "cloud_sql" {
   password = "${var.db_password}"
 }
 
-module "backend_bucket" {
-  source = "../modules/backend_bucket"
+module "assets" {
+  source = "../modules/assets"
 
   location = "${var.region}"
 }
