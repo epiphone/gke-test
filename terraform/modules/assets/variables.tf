@@ -1,5 +1,5 @@
 variable "name" {
-  default = "static-assets-bucket"
+  default = "assets"
 }
 
 variable "location" {

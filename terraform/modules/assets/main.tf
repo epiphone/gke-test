@@ -17,7 +17,7 @@ resource "google_compute_backend_bucket" "assets" {
 }
 
 resource "google_compute_url_map" "assets" {
-  name        = "assets-map"
+  name        = "${var.name}-map"
   description = "URL map for the assets backend bucket"
 
   default_service = "${google_compute_backend_bucket.assets.self_link}"
@@ -31,12 +31,12 @@ resource "google_compute_url_map" "assets" {
 }
 
 resource "google_compute_target_http_proxy" "assets" {
-  name    = "assets-proxy"
+  name    = "${var.name}-proxy"
   url_map = "${google_compute_url_map.assets.self_link}"
 }
 
 resource "google_compute_global_forwarding_rule" "assets" {
-  name       = "assets-rule"
+  name       = "${var.name}-rule"
   target     = "${google_compute_target_http_proxy.assets.self_link}"
   port_range = "80"
 }

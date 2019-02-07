@@ -2,19 +2,21 @@
 [![CircleCI](https://circleci.com/gh/epiphone/gke-terraform-example/tree/master.svg?style=svg)](https://circleci.com/gh/epiphone/gke-terraform-example/tree/master)
 
 A sample setup of Google Kubernetes Engine & Cloud SQL. Consists of
-- A [VPC-native](https://cloud.google.com/kubernetes-engine/docs/how-to/alias-ips) and [**private**](https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters) GKE cluster with [container-native load-balancing](https://cloud.google.com/kubernetes-engine/docs/how-to/container-native-load-balancing) and a single node pool
+- **GKE cluster** with a single node pool
+  - [VPC-native](https://cloud.google.com/kubernetes-engine/docs/how-to/alias-ips), [private](https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters) and using [container-native load-balancing](https://cloud.google.com/kubernetes-engine/docs/how-to/container-native-load-balancing)
   - access to the cluster master is limited to a single whitelisted IP: check the `K8S_MASTER_ALLOWED_IP` env variable below
 - **Postgres Cloud SQL** instance with [private networking](https://cloud.google.com/blog/products/databases/introducing-private-networking-connection-for-cloud-sql)
   - Cloud SQL is connected to GKE through a [private IP](https://cloud.google.com/sql/docs/mysql/connect-kubernetes-engine#private-ip), ensuring db traffic is never exposed to the public internet
 - Static assets served from **Cloud Storage** through **Cloud Load Balancer** with **Cloud CDN** enabled
   - currently using a separate load balancer from the cluster because `ingress-gce` [lacks support for backend buckets](https://github.com/kubernetes/ingress-gce/issues/33)
-- infrastructure defined with **Terraform**, Kubernetes application with [regular Kubernetes .yml notation](/k8s/k8s.yml)
-  - I found the [Kubernetes Terraform provider](https://github.com/terraform-providers/terraform-provider-kubernetes) a bit lacking as its missing for example an Ingress type, hence the `.yml`s
+- **Terraform**-defined infrastructure
+  - split into three modules of `gke`, `cloud_sql` and `assets` as well as environment-specific starting points
+  - we're not using the [Kubernetes Terraform provider](https://github.com/terraform-providers/terraform-provider-kubernetes) as its missing e.g. an Ingress type: using instead the [regular Kubernetes .yml notation](/k8s/k8s.yml) and `kubectl`
 - **multi-env** CI pipeline on **CircleCI**
   - push to any non-master branch triggers update to `dev` environment
   - push to `master` branch triggers update to `test` environment
   - additional approval step at CircleCI UI after `test` environment update triggers `prod` environment update
-  - Terraform plan file, Kubernetes config and newly built Docker image tag are stored into CircleCI artifacts
+  - Terraform plan file, Kubernetes config and newly built Docker image tag are stored into CircleCI as test artifacts
 
 ## Setup
 
