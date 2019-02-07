@@ -26,3 +26,7 @@ output "db_password" {
   value     = "${module.cloud_sql.password}"
   sensitive = true
 }
+
+output "project_id" {
+  value = "${var.project_id}"
+}
