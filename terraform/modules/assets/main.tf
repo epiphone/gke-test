@@ -1,5 +1,5 @@
 resource "google_storage_bucket" "assets" {
-  name          = "${var.name}"
+  name          = "${var.name}-bucket-${var.env}"
   location      = "${var.location}"
   storage_class = "${var.storage_class}"
 }

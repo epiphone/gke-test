@@ -48,5 +48,6 @@ module "cloud_sql" {
 module "assets" {
   source = "../modules/assets"
 
+  env      = "${local.env}"
   location = "${var.region}"
 }
