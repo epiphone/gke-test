@@ -108,6 +108,15 @@ commands:
               --master-authorized-networks=$(terraform output k8s_master_allowed_ip)/32 \
               --zone=$(terraform output cluster_zone)
           when: always
+      - run:
+          name: Copy static assets to GCS bucket
+          command: |
+            cd terraform/${ENV}
+            export STATIC_ASSETS_HOST=$(terraform output static_assets_public_address)
+            envsubst < ../../app/static/index.html > ../../app/static/index.html.filled
+            mv ../../app/static/index.html.filled ../../app/static/index.html
+            gsutil rm $(terraform output static_assets_bucket_url)/**
+            gsutil cp ../app/static/* $(terraform output static_assets_bucket_url)
 
 jobs:
   test:
