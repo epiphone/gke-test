@@ -4,16 +4,12 @@ resource "google_storage_bucket" "assets" {
   storage_class = "${var.storage_class}"
 }
 
-resource "google_storage_bucket_acl" "assets" {
-  bucket         = "${google_storage_bucket.assets.name}"
-  predefined_acl = "publicRead"
-}
-
-resource "google_storage_default_object_acl" "assets" {
+resource "google_storage_bucket_iam_binding" "assets" {
   bucket = "${google_storage_bucket.assets.name}"
+  role   = "roles/storage.objectViewer"
 
-  role_entity = [
-    "READER:allUsers",
+  members = [
+    "allUsers",
   ]
 }
 
