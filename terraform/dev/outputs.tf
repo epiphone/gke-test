@@ -30,3 +30,7 @@ output "db_password" {
 output "project_id" {
   value = "${var.project_id}"
 }
+
+output "static_assets_public_address" {
+  value = "${module.assets.public_address}"
+}
