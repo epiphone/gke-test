@@ -37,6 +37,7 @@ resource "google_sql_database_instance" "instance" {
     }
   }
 
+  # Manually disable public IP since `ipv4_enabled = false` seems to bear no effect, contrary to the docs:
   provisioner "local-exec" {
     command = "gcloud sql instances patch ${var.instance_name} --no-assign-ip"
   }

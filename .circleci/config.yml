@@ -73,9 +73,8 @@ commands:
             export PGDATABASE=$(terraform output db_name)
             export PGPASSWORD=$(terraform output db_password)
             export PGPORT=5432
-            cd ${CIRCLE_WORKING_DIRECTORY}
-            envsubst < k8s/k8s.yml > k8s_filled.yml
-            ./kubeval k8s_filled.yml
+            envsubst < ../k8s/k8s.yml > /tmp/k8s_filled.yml
+            ./kubeval /tmp/k8s_filled.yml
       - run:
           name: Authenticate kubectl
           command: |
@@ -91,7 +90,7 @@ commands:
               --zone=$(terraform output cluster_zone)
       - run:
           name: Apply kubectl
-          command: kubectl apply -f k8s_filled.yml && kubectl rollout status deployment/gke-${ENV}
+          command: kubectl apply -f /tmp/k8s_filled.yml && kubectl rollout status deployment/gke-${ENV}
       - run:
           name: Remove CI server from k8s master allowed IPs
           command: |
@@ -104,7 +103,7 @@ commands:
       - store_artifacts:
           path: /tmp/app_image
       - store_artifacts:
-          path: k8s_filled.yml
+          path: /tmp/k8s_filled.yml
       - store_artifacts:
           path: /tmp/tfplan
 

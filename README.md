@@ -58,7 +58,6 @@ Read [here](https://cloud.google.com/sql/docs/postgres/quickstart-proxy-test) on
 
 ## Further work & improvements
 
-- Cloud SQL disable public IP: Terraform's `ip_configuration.ipv4_enabled = false` setting seems to bear no effect
 - Cloud SQL high availability & automated backups
 - [static assets to Cloud Storage & CDN](https://cloud.google.com/load-balancing/docs/https/adding-a-backend-bucket-to-content-based-load-balancing#using_cloud_cdn_with_cloud_storage_buckets)
 - domain and SSL
