@@ -40,15 +40,15 @@ spec:
         - name: PORT
           value: "3000"
         - name: PGHOST
-          value: ${PGHOST}
+          value: "${PGHOST}"
         - name: PGUSER
-          value: ${PGUSER}
+          value: "${PGUSER}"
         - name: PGDATABASE
-          value: ${PGDATABASE}
+          value: "${PGDATABASE}"
         - name: PGPORT
-          value: ${PGPORT}
+          value: "${PGPORT}"
         - name: PGPASSWORD
-          value: ${PGPASSWORD}
+          value: "${PGPASSWORD}"
         ports:
         - containerPort: 3000
           protocol: TCP
