@@ -4,8 +4,10 @@
 A sample setup of Google Kubernetes Engine & Cloud SQL. Consists of
 - A [VPC-native](https://cloud.google.com/kubernetes-engine/docs/how-to/alias-ips) and [**private**](https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters) GKE cluster with [container-native load-balancing](https://cloud.google.com/kubernetes-engine/docs/how-to/container-native-load-balancing) and a single node pool
   - access to the cluster master is limited to a single whitelisted IP: check the `K8S_MASTER_ALLOWED_IP` env variable below
-- Postgres Cloud SQL instance with [private networking](https://cloud.google.com/blog/products/databases/introducing-private-networking-connection-for-cloud-sql)
+- **Postgres Cloud SQL** instance with [private networking](https://cloud.google.com/blog/products/databases/introducing-private-networking-connection-for-cloud-sql)
   - Cloud SQL is connected to GKE through a [private IP](https://cloud.google.com/sql/docs/mysql/connect-kubernetes-engine#private-ip), ensuring db traffic is never exposed to the public internet
+- Static assets served from **Cloud Storage** through **Cloud Load Balancer** with **Cloud CDN** enabled
+  - currently using a separate load balancer from the cluster because `ingress-gce` [lacks support for backend buckets](https://github.com/kubernetes/ingress-gce/issues/33)
 - infrastructure defined with **Terraform**, Kubernetes application with [regular Kubernetes .yml notation](/k8s/k8s.yml)
   - I found the [Kubernetes Terraform provider](https://github.com/terraform-providers/terraform-provider-kubernetes) a bit lacking as its missing for example an Ingress type, hence the `.yml`s
 - **multi-env** CI pipeline on **CircleCI**
@@ -59,11 +61,9 @@ Read [here](https://cloud.google.com/sql/docs/postgres/quickstart-proxy-test) on
 ## Further work & improvements
 
 - Cloud SQL high availability & automated backups
-- [static assets to Cloud Storage & CDN](https://cloud.google.com/load-balancing/docs/https/adding-a-backend-bucket-to-content-based-load-balancing#using_cloud_cdn_with_cloud_storage_buckets)
 - domain and SSL
 - tune down the service accounts privileges
 - [regional GKE cluster](https://cloud.google.com/kubernetes-engine/docs/concepts/regional-clusters)
-- clean up old container images from GCR
+- add a CI step to [clean up old container images from GCR](https://gist.github.com/ahmetb/7ce6d741bd5baa194a3fac6b1fec8bb7)
 - prompt for extra approval on infra changes in master?
 - don't rebuild docker image from `test` to `prod`?
-- structured logging to Stackdriver

@@ -44,3 +44,9 @@ module "cloud_sql" {
   username = "gke-${local.env}"
   password = "${var.db_password}"
 }
+
+module "backend_bucket" {
+  source = "../modules/backend_bucket"
+
+  location = "${var.region}"
+}
