@@ -73,7 +73,10 @@ commands:
             export PGDATABASE=$(terraform output db_name)
             export PGPASSWORD=$(terraform output db_password)
             export PGPORT=5432
-            envsubst < ../k8s/k8s.yml > /tmp/k8s_filled.yml
+            pwd
+            cd ..
+            pwd
+            envsubst < ./k8s/k8s.yml > /tmp/k8s_filled.yml
             ./kubeval /tmp/k8s_filled.yml
       - run:
           name: Authenticate kubectl
