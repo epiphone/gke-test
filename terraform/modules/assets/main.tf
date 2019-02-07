@@ -9,6 +9,14 @@ resource "google_storage_bucket_acl" "assets" {
   predefined_acl = "publicRead"
 }
 
+resource "google_storage_default_object_acl" "assets" {
+  bucket = "${google_storage_bucket.assets.name}"
+
+  role_entity = [
+    "READER:allUsers",
+  ]
+}
+
 resource "google_compute_backend_bucket" "assets" {
   name        = "${var.name}-backend"
   description = "GKE sample app static resources backend"
