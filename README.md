@@ -64,7 +64,6 @@ Read [here](https://cloud.google.com/sql/docs/postgres/quickstart-proxy-test) on
 
 - Cloud SQL high availability & automated backups
 - domain and SSL
-- CDN cache invalidation upon CI
 - tune down the service accounts privileges
 - [regional GKE cluster](https://cloud.google.com/kubernetes-engine/docs/concepts/regional-clusters)
 - add a CI step to [clean up old container images from GCR](https://gist.github.com/ahmetb/7ce6d741bd5baa194a3fac6b1fec8bb7)

@@ -67,47 +67,47 @@ commands:
           path: /tmp/tfplan
 
       # Update Kubernetes application:
-      - run:
-          name: Populate Kubernetes declaration with parameters and lint
-          command: |
-            cd terraform/${ENV}
-            export PROJECT_NAME=gke-${ENV}
-            export APP_IMAGE=`cat /tmp/app_image`
-            export PGHOST=$(terraform output db_host)
-            export PGUSER=$(terraform output db_username)
-            export PGDATABASE=$(terraform output db_name)
-            export PGPASSWORD=$(terraform output db_password)
-            export PGPORT=5432
-            cd ../..
-            envsubst < ./k8s/k8s.yml > /tmp/k8s_filled.yml
-            ./kubeval /tmp/k8s_filled.yml
-      - store_artifacts:
-          path: /tmp/k8s_filled.yml
-      - run:
-          name: Authenticate kubectl
-          command: |
-            cd terraform/${ENV}
-            gcloud container clusters get-credentials $(terraform output cluster_name) --zone $(terraform output cluster_zone)
-      - run:
-          name: Temporarily add CI server to k8s master allowed IPs
-          command: |
-            cd terraform/${ENV}
-            gcloud container clusters update $(terraform output cluster_name) \
-              --enable-master-authorized-networks \
-              --master-authorized-networks=$(terraform output k8s_master_allowed_ip)/32,$(dig +short myip.opendns.com @resolver1.opendns.com)/32 \
-              --zone=$(terraform output cluster_zone)
-      - run:
-          name: Apply kubectl
-          command: kubectl apply -f /tmp/k8s_filled.yml && kubectl rollout status deployment/gke-${ENV}
-      - run:
-          name: Remove CI server from k8s master allowed IPs
-          command: |
-            cd terraform/${ENV}
-            gcloud container clusters update $(terraform output cluster_name) \
-              --enable-master-authorized-networks \
-              --master-authorized-networks=$(terraform output k8s_master_allowed_ip)/32 \
-              --zone=$(terraform output cluster_zone)
-          when: always
+      # - run:
+      #     name: Populate Kubernetes declaration with parameters and lint
+      #     command: |
+      #       cd terraform/${ENV}
+      #       export PROJECT_NAME=gke-${ENV}
+      #       export APP_IMAGE=`cat /tmp/app_image`
+      #       export PGHOST=$(terraform output db_host)
+      #       export PGUSER=$(terraform output db_username)
+      #       export PGDATABASE=$(terraform output db_name)
+      #       export PGPASSWORD=$(terraform output db_password)
+      #       export PGPORT=5432
+      #       cd ../..
+      #       envsubst < ./k8s/k8s.yml > /tmp/k8s_filled.yml
+      #       ./kubeval /tmp/k8s_filled.yml
+      # - store_artifacts:
+      #     path: /tmp/k8s_filled.yml
+      # - run:
+      #     name: Authenticate kubectl
+      #     command: |
+      #       cd terraform/${ENV}
+      #       gcloud container clusters get-credentials $(terraform output cluster_name) --zone $(terraform output cluster_zone)
+      # - run:
+      #     name: Temporarily add CI server to k8s master allowed IPs
+      #     command: |
+      #       cd terraform/${ENV}
+      #       gcloud container clusters update $(terraform output cluster_name) \
+      #         --enable-master-authorized-networks \
+      #         --master-authorized-networks=$(terraform output k8s_master_allowed_ip)/32,$(dig +short myip.opendns.com @resolver1.opendns.com)/32 \
+      #         --zone=$(terraform output cluster_zone)
+      # - run:
+      #     name: Apply kubectl
+      #     command: kubectl apply -f /tmp/k8s_filled.yml && kubectl rollout status deployment/gke-${ENV}
+      # - run:
+      #     name: Remove CI server from k8s master allowed IPs
+      #     command: |
+      #       cd terraform/${ENV}
+      #       gcloud container clusters update $(terraform output cluster_name) \
+      #         --enable-master-authorized-networks \
+      #         --master-authorized-networks=$(terraform output k8s_master_allowed_ip)/32 \
+      #         --zone=$(terraform output cluster_zone)
+      #     when: always
       - run:
           name: Copy static assets to GCS bucket, invalidate CDN cache
           command: |
@@ -115,7 +115,8 @@ commands:
             export STATIC_ASSETS_HOST=$(terraform output static_assets_public_address)
             envsubst < ../../app/static/index.html > ../../app/static/index.html.filled
             mv ../../app/static/index.html.filled ../../app/static/index.html
-            gsutil rm $(terraform output static_assets_bucket_url)/**
+            echo '$(terraform output static_assets_bucket_url)/**'
+            gsutil rm '$(terraform output static_assets_bucket_url)/**'
             gsutil cp ../../app/static/* $(terraform output static_assets_bucket_url)
             gcloud compute url-maps invalidate-cdn-cache $(terraform output static_assets_urlmap_name) --path "/*" --async
 
