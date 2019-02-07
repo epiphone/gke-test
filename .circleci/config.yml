@@ -32,6 +32,8 @@ commands:
       - run:
           name: Persist app image tag to make it available for later steps
           command: echo eu.gcr.io/${<< parameters.google_project_id >>}/gke-app:${CIRCLE_SHA1} > /tmp/app_image
+      - store_artifacts:
+          path: /tmp/app_image
       - setup_remote_docker
       - run:
           name: Build Docker image
@@ -60,6 +62,8 @@ commands:
             terraform plan -out=/tmp/tfplan -input=false
             terraform apply -input=false -auto-approve /tmp/tfplan
             terraform refresh
+      - store_artifacts:
+        path: /tmp/tfplan
 
       # Update Kubernetes application:
       - run:
@@ -72,10 +76,12 @@ commands:
             export PGUSER=$(terraform output db_username)
             export PGDATABASE=$(terraform output db_name)
             export PGPASSWORD=$(terraform output db_password)
-            export PGPORT=5432
+            export PGPORT='5432'
             cd ../..
             envsubst < ./k8s/k8s.yml > /tmp/k8s_filled.yml
             ./kubeval /tmp/k8s_filled.yml
+      - store_artifacts:
+          path: /tmp/k8s_filled.yml
       - run:
           name: Authenticate kubectl
           command: |
@@ -101,12 +107,6 @@ commands:
               --master-authorized-networks=$(terraform output k8s_master_allowed_ip)/32 \
               --zone=$(terraform output cluster_zone)
           when: always
-      - store_artifacts:
-          path: /tmp/app_image
-      - store_artifacts:
-          path: /tmp/k8s_filled.yml
-      - store_artifacts:
-          path: /tmp/tfplan
 
 jobs:
   test:
