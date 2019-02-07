@@ -38,3 +38,7 @@ output "static_assets_bucket_url" {
 output "static_assets_public_address" {
   value = "${module.assets.public_address}"
 }
+
+output "static_assets_urlmap_name" {
+  value = "${module.assets.urlmap_name}"
+}
