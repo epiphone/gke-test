@@ -31,23 +31,24 @@ commands:
             gcloud --quiet config set project ${<< parameters.google_project_id >>}
       - run:
           name: Persist app image tag to make it available for later steps
-          command: echo eu.gcr.io/${<< parameters.google_project_id >>}/gke-app:${CIRCLE_SHA1} > /tmp/app_image
+          # command: echo eu.gcr.io/${<< parameters.google_project_id >>}/gke-app:${CIRCLE_SHA1} > /tmp/app_image
+          command: echo 'eu.gcr.io/gke-test-app-dev/gke-app@sha256:7314e5ba6301924be8f3e40a769e874e3e5c0d472707133680ec5c44a11cd5cf' > /tmp/app_image
       - store_artifacts:
           path: /tmp/app_image
-      - setup_remote_docker
-      - run:
-          name: Build Docker image
-          command: |
-            cd app
-            docker build \
-              --build-arg COMMIT_REF=${CIRCLE_SHA1} \
-              --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
-              -t `cat /tmp/app_image` .
-      - run:
-          name: Push image to Google Container Registry
-          command: |
-            gcloud auth configure-docker
-            docker push `cat /tmp/app_image`
+      # - setup_remote_docker
+      # - run:
+      #     name: Build Docker image
+      #     command: |
+      #       cd app
+      #       docker build \
+      #         --build-arg COMMIT_REF=${CIRCLE_SHA1} \
+      #         --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
+      #         -t `cat /tmp/app_image` .
+      # - run:
+      #     name: Push image to Google Container Registry
+      #     command: |
+      #       gcloud auth configure-docker
+      #       docker push `cat /tmp/app_image`
 
       # Update infra:
       - run:
