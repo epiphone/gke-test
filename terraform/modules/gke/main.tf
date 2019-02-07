@@ -1,5 +1,7 @@
 data "google_container_engine_versions" "gke_versions" {}
 
+data "google_project" "project" {}
+
 resource "google_compute_network" "gke_network" {
   provider                = "google"
   name                    = "${var.network_name}"
@@ -7,10 +9,11 @@ resource "google_compute_network" "gke_network" {
 }
 
 resource "google_container_cluster" "gke_cluster" {
-  provider                 = "google-beta"
-  min_master_version       = "${data.google_container_engine_versions.gke_versions.latest_master_version}"
-  name                     = "gke-cluster-${var.env}"
-  network                  = "${google_compute_network.gke_network.self_link}"
+  provider           = "google-beta"
+  min_master_version = "${data.google_container_engine_versions.gke_versions.latest_master_version}"
+  name               = "gke-cluster-${var.env}"
+
+  network                  = "projects/${data.google_project.project.project_id}/global/networks/${google_compute_network.gke_network.name}"
   remove_default_node_pool = true
 
   addons_config {
