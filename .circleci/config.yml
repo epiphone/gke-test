@@ -116,7 +116,7 @@ commands:
             envsubst < ../../app/static/index.html > ../../app/static/index.html.filled
             mv ../../app/static/index.html.filled ../../app/static/index.html
             echo $(terraform output static_assets_bucket_url)/**
-            gsutil rm '$(terraform output static_assets_bucket_url)/**'
+            gsutil rm $(terraform output static_assets_bucket_url)/**
             gsutil cp ../../app/static/* $(terraform output static_assets_bucket_url)
             gcloud compute url-maps invalidate-cdn-cache $(terraform output static_assets_urlmap_name) --path "/*" --async
 
