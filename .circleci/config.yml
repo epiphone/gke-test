@@ -63,7 +63,7 @@ commands:
             terraform apply -input=false -auto-approve /tmp/tfplan
             terraform refresh
       - store_artifacts:
-        path: /tmp/tfplan
+          path: /tmp/tfplan
 
       # Update Kubernetes application:
       - run:
