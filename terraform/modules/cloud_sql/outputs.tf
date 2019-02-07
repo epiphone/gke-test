@@ -3,7 +3,7 @@ output "db_name" {
 }
 
 output "host" {
-  value = "${google_sql_database_instance.instance.ip_address.1.ip_address}"
+  value = "${google_sql_database_instance.instance.first_ip_address}"
 }
 
 output "username" {

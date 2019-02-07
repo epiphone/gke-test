@@ -19,7 +19,7 @@ resource "google_sql_database_instance" "instance" {
   provider         = "google"
   database_version = "POSTGRES_9_6"
   depends_on       = ["google_service_networking_connection.private_vpc_connection"]
-  name             = "gke-app-private-db"
+  name             = "${var.instance_name}"
   region           = "${var.region}"
 
   lifecycle {
@@ -35,6 +35,10 @@ resource "google_sql_database_instance" "instance" {
       ipv4_enabled        = false
       private_network     = "${var.network}"
     }
+  }
+
+  provisioner "local-exec" {
+    command = "gcloud sql instances patch ${var.instance_name} --no-assign-ip"
   }
 }
 

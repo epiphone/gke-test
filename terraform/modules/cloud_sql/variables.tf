@@ -1,3 +1,8 @@
+variable "instance_name" {
+  type    = "string"
+  default = "gke-app-private-db"
+}
+
 variable "network" {
   type = "string"
 }
