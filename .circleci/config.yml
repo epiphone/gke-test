@@ -1,5 +1,14 @@
 version: 2.1
 
+executors:
+  default-executor:
+    docker:
+      - image: google/cloud-sdk:alpine
+    environment:
+      CLOUDSDK_CORE_DISABLE_PROMPTS: "1"
+      GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcloud-service-key.json
+      TF_IN_AUTOMATION: "true"
+
 commands:
   deploy:
     description: Build and push docker image, update infra and kubernetes application
@@ -30,27 +39,26 @@ commands:
           command: |
             echo ${<< parameters.gcloud_service_key >>} > ${GOOGLE_APPLICATION_CREDENTIALS}
             gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
-            gcloud --quiet config set project ${<< parameters.google_project_id >>}
+            gcloud config set project ${<< parameters.google_project_id >>}
       - run:
           name: Persist app image tag to make it available for later steps
-          # command: echo eu.gcr.io/${<< parameters.google_project_id >>}/gke-app:${CIRCLE_SHA1} > /tmp/app_image
-          command: echo 'eu.gcr.io/gke-test-app-dev/gke-app@sha256:fda4731b93004393eda565e749412584803e7757313910eec4a238635d0d4db0' > /tmp/app_image
+          command: echo eu.gcr.io/${<< parameters.google_project_id >>}/gke-app:${CIRCLE_SHA1} > /tmp/app_image
       - store_artifacts:
           path: /tmp/app_image
-      # - setup_remote_docker
-      # - run:
-      #     name: Build Docker image
-      #     command: |
-      #       cd app
-      #       docker build \
-      #         --build-arg COMMIT_REF=${CIRCLE_SHA1} \
-      #         --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
-      #         -t `cat /tmp/app_image` .
-      # - run:
-      #     name: Push image to Google Container Registry
-      #     command: |
-      #       gcloud auth configure-docker
-      #       docker push `cat /tmp/app_image`
+      - setup_remote_docker
+      - run:
+          name: Build Docker image
+          command: |
+            cd app
+            docker build \
+              --build-arg COMMIT_REF=${CIRCLE_SHA1} \
+              --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
+              -t `cat /tmp/app_image` .
+      - run:
+          name: Push image to Google Container Registry
+          command: |
+            gcloud auth configure-docker
+            docker push `cat /tmp/app_image`
 
       # Update infra:
       - run:
@@ -145,12 +153,9 @@ jobs:
           command: cd app && yarn test
 
   deploy-dev:
-    docker:
-      - image: google/cloud-sdk:alpine
+    executor: default-executor
     environment:
       ENV: dev
-      GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcloud-service-key.json
-      TF_IN_AUTOMATION: "true"
     steps:
       - deploy:
           db_password: DB_PASSWORD_DEV
@@ -159,12 +164,9 @@ jobs:
           google_project_id: GOOGLE_PROJECT_ID_DEV
 
   deploy-test:
-    docker:
-      - image: google/cloud-sdk:alpine
+    executor: default-executor
     environment:
       ENV: test
-      GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcloud-service-key.json
-      TF_IN_AUTOMATION: "true"
     steps:
       - deploy:
           db_password: DB_PASSWORD_TEST
@@ -173,12 +175,9 @@ jobs:
           google_project_id: GOOGLE_PROJECT_ID_TEST
 
   deploy-prod:
-    docker:
-      - image: google/cloud-sdk:alpine
+    executor: default-executor
     environment:
       ENV: prod
-      GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcloud-service-key.json
-      TF_IN_AUTOMATION: "true"
     steps:
       - deploy:
           db_password: DB_PASSWORD_PROD
@@ -199,6 +198,8 @@ workflows:
             branches:
               ignore:
                 - master
+
+      # Uncomment the following blocks to enable test and production environments:
 
       # Push to master branch triggers deployment to `test` environment:
       # - deploy-test:
