@@ -11,7 +11,7 @@
   </body>
   <script>
     window.onload = function() {
-      fetch('http://$api.{ROOT_DOMAIN_NAME}/health')
+      fetch('http://$api.${ROOT_DOMAIN_NAME}/health')
         .then(res => res.text())
         .then(res => alert('API /health response: ' + res))
         .catch(console.error)
