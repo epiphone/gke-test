@@ -37,6 +37,8 @@ spec:
       - name: ${PROJECT_NAME}
         image: ${APP_IMAGE}
         env:
+        - name: CORS_ALLOW_ORIGIN
+          value: "${CORS_ALLOW_ORIGIN}"
         - name: PORT
           value: "3000"
         - name: PGHOST

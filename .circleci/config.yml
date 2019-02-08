@@ -85,6 +85,7 @@ commands:
           command: |
             cd terraform/${ENV}
             export APP_IMAGE=`cat /tmp/app_image`
+            export CORS_ALLOW_ORIGIN=http://${<< parameters.domain >>}
             export PROJECT_NAME=gke-${ENV}
             export PGHOST=$(terraform output db_host)
             export PGUSER=$(terraform output db_username)
