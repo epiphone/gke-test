@@ -4,7 +4,7 @@ resource "google_dns_managed_zone" "root" {
 }
 
 resource "google_dns_record_set" "root" {
-  name         = ".${google_dns_managed_zone.root.dns_name}"
+  name         = "${google_dns_managed_zone.root.dns_name}"
   type         = "A"
   ttl          = 300
   managed_zone = "${google_dns_managed_zone.root.name}"
