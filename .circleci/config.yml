@@ -127,7 +127,7 @@ commands:
           name: Copy static assets to GCS bucket, invalidate CDN cache
           command: |
             cd terraform/${ENV}
-            export STATIC_ASSETS_HOST=$(terraform output static_assets_public_address)
+            export ROOT_DOMAIN_NAME=${<< parameters.domain >>}
             envsubst < ../../app/static/index.html > ../../app/static/index.html.filled
             mv ../../app/static/index.html.filled ../../app/static/index.html
             gsutil rm $(terraform output static_assets_bucket_url)/** 2> /dev/null || true # Ignore error thrown due to empty bucket on first run
