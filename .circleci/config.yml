@@ -71,7 +71,6 @@ commands:
           command: |
             cd terraform/${ENV}
             export APP_IMAGE=`cat /tmp/app_image`
-            export INGRESS_STATIC_IP_NAME=$(terraform output ingress_static_ip_name)
             export PROJECT_NAME=gke-${ENV}
             export PGHOST=$(terraform output db_host)
             export PGUSER=$(terraform output db_username)

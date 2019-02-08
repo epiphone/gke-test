@@ -26,10 +26,6 @@ output "host" {
   sensitive = true
 }
 
-output "ingress_static_ip_name" {
-  value = "${google_compute_global_address.ingress_static_ip.name}"
-}
-
 output "network" {
   value = "${google_compute_network.gke_network.self_link}"
 }

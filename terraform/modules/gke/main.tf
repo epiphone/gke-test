@@ -8,11 +8,6 @@ resource "google_compute_network" "gke_network" {
   auto_create_subnetworks = false
 }
 
-resource "google_compute_global_address" "ingress_static_ip" {
-  description = "Kubernetes Ingress static IP"
-  name        = "gke-ingress-static-address"
-}
-
 resource "google_container_cluster" "gke_cluster" {
   provider           = "google-beta"
   min_master_version = "${data.google_container_engine_versions.gke_versions.latest_master_version}"

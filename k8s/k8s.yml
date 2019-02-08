@@ -64,8 +64,6 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: ${PROJECT_NAME}
-  annotations:
-    kubernetes.io/ingress.global-static-ip-name: "${INGRESS_STATIC_IP_NAME}"
 spec:
   backend:
     serviceName: ${PROJECT_NAME}
