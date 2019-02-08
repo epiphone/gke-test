@@ -40,6 +40,7 @@ The following steps need to be completed manually before automation kicks in:
     - `compute.googleapis.com`
     - `container.googleapis.com`
     - `containerregistry.googleapis.com`
+    - `dns.googleapis.com`
     - `servicenetworking.googleapis.com`
     - `sqladmin.googleapis.com`
 
