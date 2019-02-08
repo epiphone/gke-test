@@ -27,6 +27,10 @@ output "db_password" {
   sensitive = true
 }
 
+output "ingress_static_ip_name" {
+  value = "${module.gke.ingress_static_ip_name}"
+}
+
 output "project_id" {
   value = "${var.project_id}"
 }

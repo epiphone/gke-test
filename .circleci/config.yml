@@ -31,24 +31,23 @@ commands:
             gcloud --quiet config set project ${<< parameters.google_project_id >>}
       - run:
           name: Persist app image tag to make it available for later steps
-          # command: echo eu.gcr.io/${<< parameters.google_project_id >>}/gke-app:${CIRCLE_SHA1} > /tmp/app_image
-          command: echo 'eu.gcr.io/gke-test-app-dev/gke-app@sha256:7314e5ba6301924be8f3e40a769e874e3e5c0d472707133680ec5c44a11cd5cf' > /tmp/app_image
+          command: echo eu.gcr.io/${<< parameters.google_project_id >>}/gke-app:${CIRCLE_SHA1} > /tmp/app_image
       - store_artifacts:
           path: /tmp/app_image
-      # - setup_remote_docker
-      # - run:
-      #     name: Build Docker image
-      #     command: |
-      #       cd app
-      #       docker build \
-      #         --build-arg COMMIT_REF=${CIRCLE_SHA1} \
-      #         --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
-      #         -t `cat /tmp/app_image` .
-      # - run:
-      #     name: Push image to Google Container Registry
-      #     command: |
-      #       gcloud auth configure-docker
-      #       docker push `cat /tmp/app_image`
+      - setup_remote_docker
+      - run:
+          name: Build Docker image
+          command: |
+            cd app
+            docker build \
+              --build-arg COMMIT_REF=${CIRCLE_SHA1} \
+              --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
+              -t `cat /tmp/app_image` .
+      - run:
+          name: Push image to Google Container Registry
+          command: |
+            gcloud auth configure-docker
+            docker push `cat /tmp/app_image`
 
       # Update infra:
       - run:
@@ -67,47 +66,48 @@ commands:
           path: /tmp/tfplan
 
       # Update Kubernetes application:
-      # - run:
-      #     name: Populate Kubernetes declaration with parameters and lint
-      #     command: |
-      #       cd terraform/${ENV}
-      #       export PROJECT_NAME=gke-${ENV}
-      #       export APP_IMAGE=`cat /tmp/app_image`
-      #       export PGHOST=$(terraform output db_host)
-      #       export PGUSER=$(terraform output db_username)
-      #       export PGDATABASE=$(terraform output db_name)
-      #       export PGPASSWORD=$(terraform output db_password)
-      #       export PGPORT=5432
-      #       cd ../..
-      #       envsubst < ./k8s/k8s.yml > /tmp/k8s_filled.yml
-      #       ./kubeval /tmp/k8s_filled.yml
-      # - store_artifacts:
-      #     path: /tmp/k8s_filled.yml
-      # - run:
-      #     name: Authenticate kubectl
-      #     command: |
-      #       cd terraform/${ENV}
-      #       gcloud container clusters get-credentials $(terraform output cluster_name) --zone $(terraform output cluster_zone)
-      # - run:
-      #     name: Temporarily add CI server to k8s master allowed IPs
-      #     command: |
-      #       cd terraform/${ENV}
-      #       gcloud container clusters update $(terraform output cluster_name) \
-      #         --enable-master-authorized-networks \
-      #         --master-authorized-networks=$(terraform output k8s_master_allowed_ip)/32,$(dig +short myip.opendns.com @resolver1.opendns.com)/32 \
-      #         --zone=$(terraform output cluster_zone)
-      # - run:
-      #     name: Apply kubectl
-      #     command: kubectl apply -f /tmp/k8s_filled.yml && kubectl rollout status deployment/gke-${ENV}
-      # - run:
-      #     name: Remove CI server from k8s master allowed IPs
-      #     command: |
-      #       cd terraform/${ENV}
-      #       gcloud container clusters update $(terraform output cluster_name) \
-      #         --enable-master-authorized-networks \
-      #         --master-authorized-networks=$(terraform output k8s_master_allowed_ip)/32 \
-      #         --zone=$(terraform output cluster_zone)
-      #     when: always
+      - run:
+          name: Populate Kubernetes declaration with parameters and lint
+          command: |
+            cd terraform/${ENV}
+            export APP_IMAGE=`cat /tmp/app_image`
+            export INGRESS_STATIC_IP_NAME=$(terraform output ingress_static_ip_name)
+            export PROJECT_NAME=gke-${ENV}
+            export PGHOST=$(terraform output db_host)
+            export PGUSER=$(terraform output db_username)
+            export PGDATABASE=$(terraform output db_name)
+            export PGPASSWORD=$(terraform output db_password)
+            export PGPORT=5432
+            cd ../..
+            envsubst < ./k8s/k8s.yml > /tmp/k8s_filled.yml
+            ./kubeval /tmp/k8s_filled.yml
+      - store_artifacts:
+          path: /tmp/k8s_filled.yml
+      - run:
+          name: Authenticate kubectl
+          command: |
+            cd terraform/${ENV}
+            gcloud container clusters get-credentials $(terraform output cluster_name) --zone $(terraform output cluster_zone)
+      - run:
+          name: Temporarily add CI server to k8s master allowed IPs
+          command: |
+            cd terraform/${ENV}
+            gcloud container clusters update $(terraform output cluster_name) \
+              --enable-master-authorized-networks \
+              --master-authorized-networks=$(terraform output k8s_master_allowed_ip)/32,$(dig +short myip.opendns.com @resolver1.opendns.com)/32 \
+              --zone=$(terraform output cluster_zone)
+      - run:
+          name: Apply kubectl
+          command: kubectl apply -f /tmp/k8s_filled.yml && kubectl rollout status deployment/gke-${ENV}
+      - run:
+          name: Remove CI server from k8s master allowed IPs
+          command: |
+            cd terraform/${ENV}
+            gcloud container clusters update $(terraform output cluster_name) \
+              --enable-master-authorized-networks \
+              --master-authorized-networks=$(terraform output k8s_master_allowed_ip)/32 \
+              --zone=$(terraform output cluster_zone)
+          when: always
       - run:
           name: Copy static assets to GCS bucket, invalidate CDN cache
           command: |

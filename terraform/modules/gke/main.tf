@@ -8,13 +8,20 @@ resource "google_compute_network" "gke_network" {
   auto_create_subnetworks = false
 }
 
+resource "google_compute_global_address" "ingress_static_ip" {
+  description = "Kubernetes Ingress static IP"
+  name        = "gke-ingress-static-address"
+}
+
 resource "google_container_cluster" "gke_cluster" {
   provider           = "google-beta"
   min_master_version = "${data.google_container_engine_versions.gke_versions.latest_master_version}"
   name               = "gke-cluster-${var.env}"
 
-  # Using full path instead of just "${google_compute_network.gke_network.name}" to avoid unnecessary updates (https://github.com/terraform-providers/terraform-provider-google/issues/1792)
-  network                  = "projects/${data.google_project.project.project_id}/global/networks/${google_compute_network.gke_network.name}"
+  # Using full path instead of just "${google_compute_network.gke_network.name}" to avoid unnecessary updates
+  # https://github.com/terraform-providers/terraform-provider-google/issues/1792
+  network = "projects/${data.google_project.project.project_id}/global/networks/${google_compute_network.gke_network.name}"
+
   remove_default_node_pool = true
 
   addons_config {
