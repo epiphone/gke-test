@@ -75,8 +75,9 @@ commands:
             terraform plan -out=/tmp/tfplan -input=false
             terraform apply -input=false -auto-approve /tmp/tfplan
             terraform refresh
-      - store_artifacts:
-          path: /tmp/tfplan
+      # TODO: store artifact when in private CircleCI project
+      # - store_artifacts:
+      #     path: /tmp/tfplan
 
       # Update Kubernetes application:
       - run:
@@ -93,8 +94,9 @@ commands:
             cd ../..
             envsubst < ./k8s/k8s.yml > /tmp/k8s_filled.yml
             ./kubeval /tmp/k8s_filled.yml
-      - store_artifacts:
-          path: /tmp/k8s_filled.yml
+      # TODO: store artifact when in private CircleCI project
+      # - store_artifacts:
+      #     path: /tmp/k8s_filled.yml
       - run:
           name: Authenticate kubectl
           command: |

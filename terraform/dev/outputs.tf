@@ -7,7 +7,8 @@ output "cluster_zone" {
 }
 
 output "k8s_master_allowed_ip" {
-  value = "${var.k8s_master_allowed_ip}"
+  value     = "${var.k8s_master_allowed_ip}"
+  sensitive = true
 }
 
 output "db_host" {
