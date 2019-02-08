@@ -44,6 +44,8 @@ The following steps need to be completed manually before automation kicks in:
     - `servicenetworking.googleapis.com`
     - `sqladmin.googleapis.com`
 
+You might also want to acquire a domain and [update your domain registration](https://cloud.google.com/dns/docs/update-name-servers) to point to Google Cloud DNS name servers.
+
 ## Manual deployment
 
 You can also sidestep CI and deploy locally:
@@ -65,9 +67,11 @@ Read [here](https://cloud.google.com/sql/docs/postgres/quickstart-proxy-test) on
 ## Further work & improvements
 
 - Cloud SQL high availability & automated backups
-- domain and SSL
-- tune down the service accounts privileges
 - [regional GKE cluster](https://cloud.google.com/kubernetes-engine/docs/concepts/regional-clusters)
-- add a CI step to [clean up old container images from GCR](https://gist.github.com/ahmetb/7ce6d741bd5baa194a3fac6b1fec8bb7)
-- prompt for extra approval on infra changes in master?
-- don't rebuild docker image from `test` to `prod`?
+- SSL
+- tune down service accounts privileges
+- share the same load balancer between api and assets once the [ingress-gce issue](https://github.com/kubernetes/ingress-gce/issues/33) gets resolved
+- possible CI improvements:
+    - add a step to [clean up old container images from GCR](https://gist.github.com/ahmetb/7ce6d741bd5baa194a3fac6b1fec8bb7)
+    - prompt for extra approval on infra changes in master
+    - don't rebuild docker image from `test` to `prod`

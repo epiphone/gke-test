@@ -56,6 +56,7 @@ commands:
       - run:
           name: Initialize, validate and apply Terraform
           command: |
+            export TF_VAR_cluster_ip_address=$(gcloud compute forwarding-rules list --global --filter="name:k8s-fw-*" --format="value(IPAddress)")
             export TF_VAR_db_password=${<< parameters.db_password >>}
             export TF_VAR_domain=${<< parameters.domain >>}
             export TF_VAR_k8s_master_allowed_ip=$K8S_MASTER_ALLOWED_IP
