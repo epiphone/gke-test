@@ -131,7 +131,7 @@ commands:
             envsubst < ../../app/static/index.html > ../../app/static/index.html.filled
             mv ../../app/static/index.html.filled ../../app/static/index.html
             gsutil rm $(terraform output static_assets_bucket_url)/** 2> /dev/null || true # Ignore error thrown due to empty bucket on first run
-            gsutil cp ../../app/static/* $(terraform output static_assets_bucket_url)
+            gsutil cp ../../app/static/** $(terraform output static_assets_bucket_url)
             gcloud compute url-maps invalidate-cdn-cache $(terraform output static_assets_urlmap_name) --path "/*" --async
 
 jobs:
