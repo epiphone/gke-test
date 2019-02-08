@@ -18,6 +18,8 @@ A sample setup of Google Kubernetes Engine & Cloud SQL. Consists of
   - additional approval step at CircleCI UI after `test` environment update triggers `prod` environment update
   - Terraform plan file, Kubernetes config and newly built Docker image tag are stored into CircleCI as test artifacts
 
+![architecture sketch](/doc/gke-sample-app.png)
+
 ## Setup
 
 The following steps need to be completed manually before automation kicks in:
