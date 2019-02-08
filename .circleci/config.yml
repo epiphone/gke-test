@@ -6,6 +6,8 @@ commands:
     parameters:
       db_password:
         type: env_var_name
+      domain:
+        type: env_var_name
       gcloud_service_key:
         type: env_var_name
       google_project_id:
@@ -53,8 +55,9 @@ commands:
       - run:
           name: Initialize, validate and apply Terraform
           command: |
-            export TF_VAR_k8s_master_allowed_ip=$K8S_MASTER_ALLOWED_IP
             export TF_VAR_db_password=${<< parameters.db_password >>}
+            export TF_VAR_domain=${<< parameters.domain >>}
+            export TF_VAR_k8s_master_allowed_ip=$K8S_MASTER_ALLOWED_IP
             export TF_VAR_project_id=${<< parameters.google_project_id >>}
             cd terraform/${ENV}
             terraform init -input=false
@@ -149,6 +152,7 @@ jobs:
     steps:
       - deploy:
           db_password: DB_PASSWORD_DEV
+          domain: ROOT_DOMAIN_NAME_DEV
           gcloud_service_key: GCLOUD_SERVICE_KEY_DEV
           google_project_id: GOOGLE_PROJECT_ID_DEV
 
@@ -162,6 +166,7 @@ jobs:
     steps:
       - deploy:
           db_password: DB_PASSWORD_TEST
+          domain: ROOT_DOMAIN_NAME_TEST
           gcloud_service_key: GCLOUD_SERVICE_KEY_TEST
           google_project_id: GOOGLE_PROJECT_ID_TEST
 
@@ -175,6 +180,7 @@ jobs:
     steps:
       - deploy:
           db_password: DB_PASSWORD_PROD
+          domain: ROOT_DOMAIN_NAME_PROD
           gcloud_service_key: GCLOUD_SERVICE_KEY_PROD
           google_project_id: GOOGLE_PROJECT_ID_PROD
 

@@ -51,3 +51,11 @@ module "assets" {
   env      = "${local.env}"
   location = "${var.region}"
 }
+
+module "dns" {
+  source = "../modules/dns"
+
+  domain             = "${local.env}.${var.domain}"
+  assets_ip_address  = "${module.assets.public_address}"
+  cluster_ip_address = "${var.cluster_ip_address}"
+}

@@ -20,3 +20,13 @@ variable "k8s_master_allowed_ip" {
 variable "db_password" {
   type = "string"
 }
+
+variable "domain" {
+  type        = "string"
+  description = "Domain name in form of example.com"
+}
+
+variable "cluster_ip_address" {
+  type    = "string"
+  default = ""
+}
